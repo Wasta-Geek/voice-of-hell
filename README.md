@@ -15,10 +15,10 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## TODO (for personal progress)
 
-- Handle keyboard input globally without focus
+- ~~Handle keyboard input globally without focus~~
 - System tray app
 - GUI:
-  - device selection
+  - ~~device selection~~
   - Sound set up (key / sound file managed / volume for each sound)
 - Audio processing:
   - Play file (wav)
