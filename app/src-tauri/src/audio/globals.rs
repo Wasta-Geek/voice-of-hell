@@ -1,0 +1,2 @@
+pub const BUFFER_SIZE: u32 = 128;
+pub const PREFERRED_SAMPLE_RATE: u32 = 44100;
