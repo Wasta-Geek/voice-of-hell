@@ -1,5 +1,5 @@
 [workspace]
-members = [ "app" ]
+members = [ "app/src-tauri" ]
 resolver = "2"
 
 [workspace.package]
@@ -7,5 +7,3 @@ version = "0.0.1"
 edition = "2021"
 repository = "https://github.com/Wasta-Geek/voice-of-hell.git"
 authors = ["Corentin Ducatez <wasta.geek@gmail.com>"]
-
-[workspace.dependencies]
