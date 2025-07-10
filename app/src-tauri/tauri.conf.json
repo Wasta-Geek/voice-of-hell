@@ -1,0 +1,66 @@
+{
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:8000",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "../src/icons/32x32.png",
+      "../src/icons/128x128.png",
+      "../src/icons/128x128@2x.png",
+      "../src/icons/icon.icns",
+      "../src/icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [
+    ],
+    "shortDescription": "",
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  },
+  "productName": "Voice of Hell",
+  "mainBinaryName": "Voice of Hell",
+  "version": "0.0.1",
+  "identifier": "hell.of.voice",
+  "plugins": {},
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "Voice of Hell",
+        "width": 800
+      }
+    ],
+    "trayIcon": {
+      "iconPath": "../src/icons/tray-icon.png",
+      "title": "Voice of Hell"
+    },
+    "security": {
+      "csp": null
+    }
+  }
+}
