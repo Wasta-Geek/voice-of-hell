@@ -10,13 +10,14 @@ pub(crate) mod error;
 pub(crate) mod keyboard;
 pub(crate) mod log;
 pub(crate) mod models;
+pub(crate) mod profile;
 
 use std::sync::Mutex;
 
 use audio::device_manager::DeviceManager;
 use tauri::{menu::{MenuBuilder, PredefinedMenuItem}, Manager};
 
-use crate::keyboard::keyboard_manager::KeyboardManager;
+use crate::{keyboard::keyboard_manager::KeyboardManager, profile::config_manager::ConfigManager};
 use crate::log::init_logger;
 use crate::models::shared_state::SharedState;
 
@@ -27,6 +28,8 @@ fn main() {
     let _keyboard_manager = KeyboardManager::new();
     // Init audio devices manager
     let device_manager = DeviceManager::new();
+    // Config file(s) manager
+    let config_manager = ConfigManager::new();
 
     // Create tauri app
     tauri::Builder::default()
