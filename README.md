@@ -19,7 +19,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 - System tray app
 - GUI:
   - ~~device selection~~
-  - Sound set up (key / sound file managed / volume for each sound)
+  - [WIP] Sound set up (key / sound file managed / volume for each sound)
 - Audio processing:
   - Play file (wav)
   - Add effects:
@@ -28,3 +28,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   - Stop played files / effects
 - [Windows] app installer
 - [R&D] Create a virtual audio device ? (would replace VCable)
+
+## Errors
+
+- When quitting dev: "ELIFECYCLE  Command failed with exit code 4294967295."
+  - Can be safely ignored: https://github.com/tauri-apps/tauri/issues/5243#issuecomment-1252001710
