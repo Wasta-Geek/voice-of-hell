@@ -15,7 +15,7 @@ pub(crate) mod profile;
 use std::sync::Mutex;
 
 use audio::device_manager::DeviceManager;
-use tauri::{menu::{MenuBuilder, PredefinedMenuItem}, Manager};
+use tauri::Manager;
 
 use crate::{keyboard::keyboard_manager::KeyboardManager, profile::config_manager::ConfigManager};
 use crate::log::init_logger;
@@ -34,9 +34,6 @@ fn main() {
     // Create tauri app
     tauri::Builder::default()
         .setup(move |app| {
-            let _menu = MenuBuilder::new(app)
-                .item(&PredefinedMenuItem::quit(app, None)?)
-                .build()?;
             app.manage(Mutex::new(SharedState{ device_manager: device_manager }));
 
             Ok(())
