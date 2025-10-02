@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::models::keymap_config::KeymapConfig;
-
 #[derive(Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../src/bindings/")]
-pub struct Profile {
-    name: String,
-    keymap_config: KeymapConfig
+pub enum SoundEffects {
+    PlaySound(String),
+    IncreaseVolume(u8),
+    DecreaseVolume(u8),
+    ClearAllEffects,
 }
