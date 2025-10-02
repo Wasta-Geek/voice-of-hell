@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import "./App.css";
 
 type AudioDevice = {
   name: string;
 };
 
-function Device() {
+function Devices() {
   const [inputDeviceList, setInputDeviceList] = useState<AudioDevice[]>([]);
   const [outputDeviceList, setOutputDeviceList] = useState<AudioDevice[]>([]);
 
+  // Handler called when input device selected changed
   async function inputDeviceOnChange(event: any) {
     if (event.target.value != "") {
       invoke('input_device_selected', {deviceName : event.target.value});  
     }
   }
 
+  // Handler called when output device selected changed
   async function outputDeviceOnChange(event: any) {
     if (event.target.value != "") {
       invoke('output_device_selected', {deviceName : event.target.value});  
@@ -50,7 +51,7 @@ function Device() {
         <select onChange={inputDeviceOnChange}>
           <option></option>
           {
-            inputDeviceList.map((device) => <option>{device.name}</option>)
+            inputDeviceList.map((device, index) => <option key={index}>{device.name}</option>)
           }
         </select>
 
@@ -58,7 +59,7 @@ function Device() {
         <select onChange={outputDeviceOnChange}>
           <option></option>
           {
-            outputDeviceList.map((device) => <option>{device.name}</option>)
+            outputDeviceList.map((device, index) => <option key={index}>{device.name}</option>)
           }
         </select>
       </div>
@@ -66,4 +67,4 @@ function Device() {
   );
 }
 
-export default Device;
+export default Devices;
