@@ -1,3 +1,3 @@
-import NewProfileComponent from "./NewProfile";
+import KeyEffectComponent from "./KeyEffect";
 
-export {NewProfileComponent};
+export {KeyEffectComponent};

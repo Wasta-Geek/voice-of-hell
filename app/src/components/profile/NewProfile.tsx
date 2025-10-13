@@ -1,9 +1,9 @@
 import { ActionIcon, Stack, TextInput } from '@mantine/core';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { useGetConfig, useUpdateConfig } from '../hooks/config';
+import { useGetConfig, useUpdateConfig } from '../../hooks/useConfig';
 
-function NewProfileComponent({closeCallback}: {closeCallback: () => void}) {
+function NewProfile({closeCallback}: {closeCallback: () => void}) {
   const [newProfileName, setNewProfileName] = useState<string>('');
   const [errorString, setErrorString] = useState<string>('');
   const { data: config } = useGetConfig();
@@ -43,4 +43,4 @@ function NewProfileComponent({closeCallback}: {closeCallback: () => void}) {
   );
 }
 
-export default NewProfileComponent;
+export default NewProfile;
