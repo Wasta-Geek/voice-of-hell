@@ -2,7 +2,7 @@ import { ActionIcon, Group, Modal, Select, Stack } from "@mantine/core";
 import { IconSquarePlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useEffect } from "react";
 import { useGetConfig, useUpdateConfig } from "../../hooks/useConfig";
-import { NewProfileComponent } from '../../components/Index';
+import { NewProfile } from './NewProfile';
 import { useDisclosure } from "@mantine/hooks";
 
 type ProfileManagementProps = {
@@ -43,7 +43,7 @@ function ProfileManagement({ profileIndex, setProfileIndex }: ProfileManagementP
     return (
         <div>
             <Modal withinPortal={false} opened={opened} onClose={close} withCloseButton={true} size="auto" centered>
-                <NewProfileComponent closeCallback={close} />
+                <NewProfile closeCallback={close} />
             </Modal>
             <Group justify="center">
                 <Select
