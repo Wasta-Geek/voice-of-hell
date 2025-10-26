@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../src/bindings/")]
-pub enum SoundEffects {
+#[derive(Clone, Serialize, Deserialize)]
+pub enum SoundEffect {
+    DoNothing,
     PlaySound(String),
     IncreaseVolume(u8),
     DecreaseVolume(u8),

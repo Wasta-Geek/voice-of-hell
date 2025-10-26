@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-use crate::models::keymap_config::KeymapConfig;
+use crate::models::keybind_config::KeybindEffectItem;
 
-#[derive(Clone, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../src/bindings/")]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Profile {
     name: String,
-    keymap_config: KeymapConfig
+    keybind_config: Vec<KeybindEffectItem>,
 }

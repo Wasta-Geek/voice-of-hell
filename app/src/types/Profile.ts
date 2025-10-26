@@ -1,6 +1,6 @@
-import type { KeymapConfig } from "./KeymapConfig";
+import { KeybindEffectItem } from "./KeybindEffectItem";
 
 export type Profile = {
     name: string,
-    keymap_config: KeymapConfig,
+    keybind_config: KeybindEffectItem[],
 };

@@ -1,4 +1,4 @@
-import type { Profile } from "./Profile";
+import { Profile } from "./Profile";
 
 export type AppConfig = {
     last_input_device_used: string | null,
