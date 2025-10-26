@@ -47,15 +47,16 @@ impl ConfigManager {
             {
                 match serde_json::from_slice::<AppConfig>(raw_file_content.as_bytes()) {
                     Ok(json_file_content) => {
-                        self.app_config.last_profile_used = json_file_content.last_profile_used;
+                        self.app_config.last_profile_index_used = json_file_content.last_profile_index_used;
                         self.app_config.profiles = json_file_content.profiles;
+                        log::info!("Config file properly read from: {:?}", self.get_project_config_file_path());
                     }
                     Err(err) => {
-                        log::error!("Error while parsing config file as JSON, reason: {}", err)
+                        log::error!("Error while parsing config file as JSON, path: {:?}, reason: {}", self.get_project_config_file_path(), err)
                     }
                 }
             }
-            Err(err) => log::error!("Couldn't read config file, reason: {}", err),
+            Err(err) => log::error!("Couldn't read config file, path: {:?}, reason: {}", self.get_project_config_file_path(), err),
         };
     }
 
