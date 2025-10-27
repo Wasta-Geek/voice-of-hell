@@ -17,7 +17,7 @@ export function useUpdateConfig() {
     return useMutation({
         mutationFn: (config: AppConfig) => invoke('save_config', { config: config }),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['get_config'] })
+            queryClient.invalidateQueries({ queryKey: ['config'] });
         }
     });
 };
