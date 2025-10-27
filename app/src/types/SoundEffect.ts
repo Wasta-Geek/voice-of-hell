@@ -21,7 +21,7 @@ export function generateSoundEffect(type: RustSoundEffect): SoundEffect {
 export const SoundEffectType: Record<RustSoundEffect, string> = {
     DoNothing: "Do nothing",
     PlaySound: "Play a sound",
-    ClearAllEffects: "Clear all effects currently played",
+    ClearAllEffects: "Clear all effects",
     IncreaseVolume: "IncreaseVolume",
     DecreaseVolume: "DecreaseVolume"
 }
