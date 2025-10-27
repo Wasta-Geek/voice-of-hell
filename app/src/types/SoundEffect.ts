@@ -1,13 +1,35 @@
 export type SoundEffect =
-    { type: "DoNothing" }
-    | { type: "PlaySound", file: string }
-    | { type: "IncreaseVolume", volume: number }
-    | { type: "DecreaseVolume", volume: number }
-    | { type: "ClearAllEffects" };
+    { type: RustSoundEffect.DoNothing }
+    | { type: RustSoundEffect.PlaySound, file: string }
+    | { type: RustSoundEffect.IncreaseVolume, volume: number }
+    | { type: RustSoundEffect.DecreaseVolume, volume: number }
+    | { type: RustSoundEffect.ClearAllEffects };
 
-    
-export enum SoundEffectType {
-    DoNothing = "Do nothing",
-    PlaySound = "Play a sound",
-    ClearAllEffects = "Clear all effects currently played"
+
+export function generateSoundEffect(type: RustSoundEffect): SoundEffect {
+    switch (type) {
+        case RustSoundEffect.IncreaseVolume:
+        case RustSoundEffect.DecreaseVolume:
+            return { type: type, volume: 50 };
+        case RustSoundEffect.PlaySound:
+            return { type: type, file: "" };
+        default:
+            return { type: type };
+    }
 }
+
+export const SoundEffectType: Record<RustSoundEffect, string> = {
+    DoNothing: "Do nothing",
+    PlaySound: "Play a sound",
+    ClearAllEffects: "Clear all effects currently played",
+    IncreaseVolume: "IncreaseVolume",
+    DecreaseVolume: "DecreaseVolume"
+}
+
+export enum RustSoundEffect {
+    DoNothing = "DoNothing",
+    PlaySound = "PlaySound",
+    ClearAllEffects = "ClearAllEffects",
+    IncreaseVolume = "IncreaseVolume",
+    DecreaseVolume = "DecreaseVolume"
+};

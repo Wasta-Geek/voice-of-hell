@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import ProfileManagement from '../components/profile/ProfileManagement';
+import { Stack } from '@mantine/core';
+import { useGetConfig } from '../hooks';
+import { ProfileKeyEffectList, ProfileManagement } from '../components/profile';
 
+
+// Tab: Profile
 function Profiles() {
   const [profileIndex, setProfileIndex] = useState<string | null>();
+  const { data: config } = useGetConfig();
 
   return (
-    <main className="container">
-      <div>
-        <ProfileManagement profileIndex={profileIndex} setProfileIndex={setProfileIndex}/>
-      </div>
-    </main>
+    <Stack align='center'>
+      <ProfileManagement profileIndex={profileIndex} setProfileIndex={setProfileIndex} />
+      <ProfileKeyEffectList config={config} />
+    </Stack>
   );
 }
 

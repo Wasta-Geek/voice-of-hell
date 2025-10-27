@@ -1,7 +1,7 @@
 import { AppConfig } from "./AppConfig";
-import { KeymapEffectItem } from "./KeybindEffectItem";
+import { KeybindEffectItem } from "./KeybindEffectItem";
 import { LocalKeycode } from "./LocalKeycode";
 import { Profile } from "./Profile";
-import { SoundEffect, SoundEffectType } from "./SoundEffect";
+import { RustSoundEffect, SoundEffect, SoundEffectType } from "./SoundEffect";
 
-export { type AppConfig, type KeymapEffectItem, LocalKeycode, type Profile, type SoundEffect, SoundEffectType };
+export { type AppConfig, type KeybindEffectItem, LocalKeycode, type Profile, type SoundEffect, SoundEffectType, RustSoundEffect };

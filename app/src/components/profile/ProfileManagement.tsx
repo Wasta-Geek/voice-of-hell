@@ -1,9 +1,10 @@
 import { ActionIcon, Group, Modal, Select, Stack } from "@mantine/core";
 import { IconSquarePlus, IconTrash } from "@tabler/icons-react";
 import { useCallback, useEffect } from "react";
-import { useGetConfig, useUpdateConfig } from "../../hooks/useConfig";
-import { NewProfile } from './NewProfile';
+import { useGetConfig, useUpdateConfig } from "../../hooks";
 import { useDisclosure } from "@mantine/hooks";
+import NewProfile from "./NewProfile";
+
 
 type ProfileManagementProps = {
     profileIndex: string | null | undefined;
@@ -32,12 +33,14 @@ function ProfileManagement({ profileIndex, setProfileIndex }: ProfileManagementP
     }, [config])
 
     const handleDeleteProfile = useCallback(() => {
-        // Remove profile from config
-        config.profiles.splice(profileIndex, 1);
-        // Reset current profile selected
-        setProfileIndex(null);
-        // Save config with deleted profile
-        updateConfig.mutateAsync(config);
+        if (config) {
+            // Remove profile from config
+            config.profiles.splice(profileIndex, 1);
+            // Reset current profile selected
+            config.last_profile_index_used = null;
+            // Save config with deleted profile
+            updateConfig.mutateAsync(config);
+        }
     }, [profileIndex]);
 
     return (
@@ -45,7 +48,7 @@ function ProfileManagement({ profileIndex, setProfileIndex }: ProfileManagementP
             <Modal withinPortal={false} opened={opened} onClose={close} withCloseButton={true} size="auto" centered>
                 <NewProfile closeCallback={close} />
             </Modal>
-            <Group justify="center">
+            <Group justify="center" align="center">
                 <Select
                     label="Current profile"
                     placeholder="Select your profile"
@@ -53,6 +56,7 @@ function ProfileManagement({ profileIndex, setProfileIndex }: ProfileManagementP
                     value={profileIndex}
                     onChange={handleSelectProfile}
                     size="md"
+                    radius="md"
                 />
                 <Stack gap="xs" mt="lg">
                     <ActionIcon color="gray" radius="md" size="xs" onClick={open}><IconSquarePlus /></ActionIcon>
