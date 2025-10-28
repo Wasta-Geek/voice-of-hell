@@ -1,21 +1,22 @@
 import { useCallback, useState } from "react";
-import { RustSoundEffect, SoundEffect } from "../../../types";
 import { Slider } from "@mantine/core";
-import { useGetConfig, useUpdateConfig } from "../../../hooks";
 
-type KeyEffectVolumeSliderProps = { 
-    soundEffect: SoundEffect | undefined,
+import { RustSoundEffect, SoundEffect } from "@/types";
+import { useGetConfig, useUpdateConfig } from "@/hooks";
+
+type KeyEffectVolumeSliderProps = {
     profileIndex: number,
     keybindIndex: number
- };
+};
 
-function KeyEffectVolumeSlider ({ soundEffect, profileIndex, keybindIndex }: KeyEffectVolumeSliderProps ) {
+function KeyEffectVolumeSlider({ profileIndex, keybindIndex }: KeyEffectVolumeSliderProps) {
     const { data: config } = useGetConfig();
     const updateConfig = useUpdateConfig();
 
-    if (!soundEffect || !([RustSoundEffect.IncreaseVolume, RustSoundEffect.DecreaseVolume].includes(soundEffect.type))) return null;
+    if (!config) return null;
 
-    const [volume, setVolume] = useState(soundEffect.volume);
+    const soundEffect = config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect as Extract<SoundEffect, { type: RustSoundEffect.IncreaseVolume | RustSoundEffect.DecreaseVolume }>;
+    const [volume, setVolume] = useState(soundEffect?.volume ?? 50);
 
     const handleVolumeChanged = useCallback((volume: number) => {
         // Check if config is defined
@@ -27,7 +28,9 @@ function KeyEffectVolumeSlider ({ soundEffect, profileIndex, keybindIndex }: Key
     const handleVolumeChangedEnd = useCallback((volume: number) => {
         // Check if config is defined
         if (config) {
-            config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect.volume = volume;
+            const soundEffectTyped = config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect as Extract<SoundEffect, { type: RustSoundEffect.IncreaseVolume | RustSoundEffect.DecreaseVolume }>;
+
+            soundEffectTyped.volume = volume;
             updateConfig.mutateAsync(config);
         }
     }, [config, profileIndex, keybindIndex]);

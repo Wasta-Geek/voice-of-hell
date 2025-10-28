@@ -1,6 +1,6 @@
 export type SoundEffect =
     { type: RustSoundEffect.DoNothing }
-    | { type: RustSoundEffect.PlaySound, file: string }
+    | { type: RustSoundEffect.PlaySound, name: string, lastModified: number | null, path: string | null }
     | { type: RustSoundEffect.IncreaseVolume, volume: number }
     | { type: RustSoundEffect.DecreaseVolume, volume: number }
     | { type: RustSoundEffect.ClearAllEffects };
@@ -12,7 +12,7 @@ export function generateSoundEffect(type: RustSoundEffect): SoundEffect {
         case RustSoundEffect.DecreaseVolume:
             return { type: type, volume: 50 };
         case RustSoundEffect.PlaySound:
-            return { type: type, file: "" };
+            return { type: type, name: "", lastModified: null, path: null };
         default:
             return { type: type };
     }
