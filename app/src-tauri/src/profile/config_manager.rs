@@ -1,6 +1,7 @@
 use std::{
     fs::{self, File},
-    io::Write, path::PathBuf,
+    io::Write,
+    path::PathBuf,
 };
 
 use directories::ProjectDirs;
@@ -13,19 +14,14 @@ pub struct ConfigManager {
 }
 
 impl ConfigManager {
-    pub fn new() -> Self {
-        // ProjectDirs instance
+    pub fn new(app_config: AppConfig) -> Self {
         let project_dir = Self::get_project_dir_instance();
-        // Project config directory path
         let project_path_dir = project_dir.config_dir();
-        // Variable used to init new Self instance
 
-        let mut result = Self {
-            app_config: AppConfig::default(),
-            project_path_dir: project_path_dir.to_path_buf()
-        };
-        result.read_config_from_system();
-        result
+        Self {
+            app_config: app_config,
+            project_path_dir: project_path_dir.to_path_buf(),
+        }
     }
 
     pub fn get_config(&self) -> AppConfig {
@@ -47,16 +43,28 @@ impl ConfigManager {
             {
                 match serde_json::from_slice::<AppConfig>(raw_file_content.as_bytes()) {
                     Ok(json_file_content) => {
-                        self.app_config.last_profile_index_used = json_file_content.last_profile_index_used;
+                        self.app_config.last_profile_index_used =
+                            json_file_content.last_profile_index_used;
                         self.app_config.profiles = json_file_content.profiles;
-                        log::info!("Config file properly read from: {:?}", self.get_project_config_file_path());
+                        log::info!(
+                            "Config file properly read from: {:?}",
+                            self.get_project_config_file_path()
+                        );
                     }
                     Err(err) => {
-                        log::error!("Error while parsing config file as JSON, path: {:?}, reason: {}", self.get_project_config_file_path(), err)
+                        log::error!(
+                            "Error while parsing config file as JSON, path: {:?}, reason: {}",
+                            self.get_project_config_file_path(),
+                            err
+                        )
                     }
                 }
             }
-            Err(err) => log::error!("Couldn't read config file, path: {:?}, reason: {}", self.get_project_config_file_path(), err),
+            Err(err) => log::error!(
+                "Couldn't read config file, path: {:?}, reason: {}",
+                self.get_project_config_file_path(),
+                err
+            ),
         };
     }
 
@@ -64,7 +72,11 @@ impl ConfigManager {
         // Check if config directory exists; if not -> creates
         if !self.project_path_dir.exists() {
             fs::create_dir_all(self.project_path_dir.clone()).expect(
-                format!("Couldn't create config directory at {:?}.", self.project_path_dir).as_str(),
+                format!(
+                    "Couldn't create config directory at {:?}.",
+                    self.project_path_dir
+                )
+                .as_str(),
             );
         }
         // Config file path
@@ -84,11 +96,19 @@ impl ConfigManager {
     }
 
     fn get_project_config_file_path(&self) -> PathBuf {
-        return self.project_path_dir.join("config.json")
+        return self.project_path_dir.join("config.json");
     }
 
     fn get_project_dir_instance() -> ProjectDirs {
         ProjectDirs::from("", "WastaGeek", env!("CARGO_PKG_NAME"))
             .expect("Couldn't open project config path.")
+    }
+}
+
+impl Default for ConfigManager {
+    fn default() -> Self {
+        let mut result = Self::new(AppConfig::default());
+        result.read_config_from_system();
+        result
     }
 }

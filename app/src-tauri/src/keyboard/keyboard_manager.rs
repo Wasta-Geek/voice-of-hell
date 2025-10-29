@@ -1,49 +1,57 @@
-use std::collections::HashMap;
+use arc_swap::ArcSwap;
+use device_query::{DeviceQuery, DeviceState, Keycode};
+use std::{
+    collections::HashSet,
+    sync::{Arc, atomic::{AtomicBool, Ordering}},
+    thread::{self, JoinHandle},
+};
 
-use device_query::{CallbackGuard, DeviceEvents, DeviceState, Keycode};
-use once_cell::sync::Lazy;
-
-// use crate::keyboard::actions::utils::mute_all_effects;
-
-static KEYMAP_PRESSED_ACTION: Lazy<HashMap<Keycode, fn () -> ()>> = Lazy::new(|| {
-    HashMap::from ([
-        // ex:
-        //  (Keycode::Up, mute_all_effects as fn() -> ())
-    ])
-});
-static KEYMAP_RELEASED_ACTION: Lazy<HashMap<Keycode, fn () -> ()>> = Lazy::new(|| {HashMap::new()});
+use crate::profile::config_manager::ConfigManager;
 
 pub struct KeyboardManager {
-    device_state: DeviceState,
-    key_released_guard: Option<CallbackGuard<fn(&Keycode)>>,
-    key_pressed_guard: Option<CallbackGuard<fn(&Keycode)>>,
+    config_manager_arc: Arc<ArcSwap<ConfigManager>>,
+    thread_handle: Option<JoinHandle<()>>,
+    thread_should_run: Arc<AtomicBool>
 }
 
 impl KeyboardManager {
-    pub fn new() -> Self {
+    pub fn new(config_manager_arc: Arc<ArcSwap<ConfigManager>>) -> Self {
         let mut ret = KeyboardManager {
-            device_state: DeviceState::new(),
-            key_pressed_guard: None,
-            key_released_guard: None,
+            config_manager_arc: config_manager_arc,
+            thread_handle: None,
+            thread_should_run: Arc::new(AtomicBool::new(true))
         };
-        ret.registers_key_state_changed();
+
+        let thread_shound_run_clone = ret.thread_should_run.clone();
+        let config_manager_clone = ret.config_manager_arc.clone();
+        // Launch thread and poll for key pressed
+        let join_handle = thread::spawn(move || poll(thread_shound_run_clone, config_manager_clone));
+        ret.thread_handle = Some(join_handle);
+
         ret
     }
 
-    fn registers_key_state_changed(&mut self ) {
-        self.key_pressed_guard = Some(self.device_state.on_key_down(on_key_down));
-        self.key_released_guard = Some(self.device_state.on_key_up(on_key_up));
+    pub fn exit_thread(&mut self) {
+        if let Some(thread_join_handle) = self.thread_handle.take() {
+            self.thread_should_run.store(false, Ordering::Relaxed);
+            let _ = thread_join_handle.join();
+        }
     }
 }
 
-pub fn on_key_up ( keycode: &Keycode ) {
-    if let Some(callback) = KEYMAP_RELEASED_ACTION.get(keycode) {
-        callback();
-    }
-}
+fn poll(thread_should_run_bool: Arc<AtomicBool>, config_manager_arc: Arc<ArcSwap<ConfigManager>>) {
+    let device_state: DeviceState = DeviceState::new();
+    let mut previous_key_pressed_list = HashSet::new();
 
-pub fn on_key_down ( keycode: &Keycode ) {
-    if let Some(callback) = KEYMAP_PRESSED_ACTION.get(keycode) {
-        callback();
+    while thread_should_run_bool.load(Ordering::Relaxed) {
+        let key_pressed_list: HashSet<Keycode> = device_state.get_keys().into_iter().collect();
+
+        if !key_pressed_list.is_empty() {
+            let config_manager = config_manager_arc.load();
+            let config = config_manager.get_config();
+
+            if let Some(last_profile_index_used) = config.last_profile_index_used {}
+        }
+        previous_key_pressed_list = key_pressed_list;
     }
 }

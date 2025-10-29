@@ -1,4 +1,5 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use arc_swap::ArcSwap;
 use tauri::{AppHandle, State};
 
 use crate::{
@@ -49,19 +50,17 @@ pub fn output_device_selected(
 }
 
 #[tauri::command]
-pub fn get_config(state: State<'_, Mutex<ConfigManager>>) -> Result<AppConfig, ()> {
-    let config_manager = state.lock().unwrap();
+pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<AppConfig, ()> {
+    let config_manager = state.load();
 
     let config = config_manager.get_config();
     Ok(config)
 }
 
 #[tauri::command]
-pub fn save_config(state: State<'_, Mutex<ConfigManager>>, config: AppConfig) -> Result<(), ()> {
-    // Lock mutex for mutable state
-    let mut config_manager = state.lock().unwrap();
-
-    let _ = config_manager.put_config(config);
+pub fn save_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>, config: AppConfig) -> Result<(), ()> {   
+    let new_config_manager = Arc::new(ConfigManager::new(config));
+    state.store(new_config_manager);
 
     Ok(())
 }

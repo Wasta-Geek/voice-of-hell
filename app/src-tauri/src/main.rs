@@ -12,8 +12,9 @@ pub(crate) mod log;
 pub(crate) mod models;
 pub(crate) mod profile;
 
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
+use arc_swap::ArcSwap;
 use audio::device_manager::DeviceManager;
 use tauri::Manager;
 
@@ -23,18 +24,18 @@ use crate::{keyboard::keyboard_manager::KeyboardManager, profile::config_manager
 fn main() {
     // Init logger
     init_logger();
-    // Init keyboard manager
-    let _keyboard_manager = KeyboardManager::new();
-    // Init audio devices manager
+    // Init needed managers
     let device_manager = DeviceManager::new();
-    // Config file(s) manager
-    let config_manager = ConfigManager::new();
+    let config_manager = ConfigManager::default();
+    let config_manager_arc = Arc::new(ArcSwap::from_pointee(config_manager));
+    let keyboard_manager = KeyboardManager::new(config_manager_arc.clone());
 
     // Create tauri app
     tauri::Builder::default()
         .setup(move |app| {
             app.manage(Mutex::new(device_manager));
-            app.manage(Mutex::new(config_manager));
+            app.manage(config_manager_arc);
+            app.manage(Mutex::new(keyboard_manager));
 
             Ok(())
         })
@@ -50,8 +51,12 @@ fn main() {
         .run(|app_handle, event| {
             match event {
                 tauri::RunEvent::ExitRequested { .. } => {
-                    let config_manager_mutex = app_handle.state::<Mutex<ConfigManager>>();
-                    let config_manager = config_manager_mutex.lock().unwrap();
+                    let keyboard_manager_mutex = app_handle.state::<Mutex<KeyboardManager>>();
+                    let mut keyboard_manager = keyboard_manager_mutex.lock().unwrap();
+                    keyboard_manager.exit_thread();
+
+                    let config_manager_arc = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
+                    let config_manager = config_manager_arc.load_full();
 
                     // Save config to Config file on app exit
                     config_manager.save_config();
