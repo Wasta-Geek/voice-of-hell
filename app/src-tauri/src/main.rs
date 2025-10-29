@@ -18,7 +18,6 @@ use audio::device_manager::DeviceManager;
 use tauri::Manager;
 
 use crate::log::init_logger;
-use crate::models::shared_state::SharedState;
 use crate::{keyboard::keyboard_manager::KeyboardManager, profile::config_manager::ConfigManager};
 
 fn main() {
@@ -34,10 +33,8 @@ fn main() {
     // Create tauri app
     tauri::Builder::default()
         .setup(move |app| {
-            app.manage(Mutex::new(SharedState {
-                device_manager: device_manager,
-                config_manager: config_manager,
-            }));
+            app.manage(Mutex::new(device_manager));
+            app.manage(Mutex::new(config_manager));
 
             Ok(())
         })
@@ -53,12 +50,12 @@ fn main() {
         .run(|app_handle, event| {
             match event {
                 tauri::RunEvent::ExitRequested { .. } => {
-                    let state_mutex = app_handle.state::<Mutex<SharedState>>();
-                    let state = state_mutex.lock().unwrap();
+                    let config_manager_mutex = app_handle.state::<Mutex<ConfigManager>>();
+                    let config_manager = config_manager_mutex.lock().unwrap();
 
                     // Save config to Config file on app exit
-                    state.config_manager.save_config();
-                },
+                    config_manager.save_config();
+                }
                 _ => (),
             }
         });
