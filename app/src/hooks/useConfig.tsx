@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { invoke } from '@tauri-apps/api/core';
-import { AppConfig } from '../types/AppConfig';
+
+import { AppConfig } from '@/types/AppConfig';
 
 // Hook generator to use for getting config
 export function useGetConfig() {
     return useQuery<AppConfig>({
         queryFn: () => invoke<AppConfig>('get_config'),
-        queryKey: [`config`],
+        queryKey: ['config']
     });
 };
 
@@ -15,9 +16,9 @@ export function useUpdateConfig() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (config: AppConfig) => invoke('save_config', { config: config }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['config'] });
+        mutationFn: (config: AppConfig) => invoke<AppConfig>('save_config', { config: config }),
+        onSuccess: (config: AppConfig) => {
+            queryClient.setQueryData(['config'], config)
         }
     });
 };

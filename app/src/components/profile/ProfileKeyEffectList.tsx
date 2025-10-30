@@ -1,13 +1,16 @@
 import { useCallback } from 'react';
-import { Stack } from '@mantine/core';
-import { AddArea } from '..';
+import { Select, Stack } from '@mantine/core';
 import { IconMusicPlus } from '@tabler/icons-react';
 
-import { useUpdateConfig } from '../../hooks';
-import { AppConfig, RustSoundEffect } from '../../types';
-import ProfileKeyEffectItem from './ProfileKeyEffectItem';
+import { useGetConfig, useUpdateConfig } from '@/hooks';
+import { RustSoundEffect } from '@/types';
+import ProfileKeyEffectItem from '@/components/profile/ProfileKeyEffectItem';
+import { ButtonWithIcon } from '@/components';
 
-function ProfileKeyEffectList({ config }: { config: AppConfig | undefined }) {
+type ProfileKeyEffectProps = {};
+
+function ProfileKeyEffectList({ }: ProfileKeyEffectProps) {
+    const { data: config } = useGetConfig();
     const updateConfig = useUpdateConfig();
 
     const handleAddKeybindEffect = useCallback(() => {
@@ -15,13 +18,14 @@ function ProfileKeyEffectList({ config }: { config: AppConfig | undefined }) {
         if (config && config.last_profile_index_used) {
             const profileIndex = parseInt(config.last_profile_index_used);
 
+            let new_config = {...config};
             // Add new empty keybind
-            config.profiles[profileIndex].keybind_config.push({
+            new_config.profiles[profileIndex].keybind_config.push({
                 keycode_list: [],
                 sound_effect: { type: RustSoundEffect.DoNothing },
             });
 
-            updateConfig.mutateAsync(config);
+            updateConfig.mutateAsync(new_config);
         }
     }, [config]);
 
@@ -35,11 +39,10 @@ function ProfileKeyEffectList({ config }: { config: AppConfig | undefined }) {
     if (profileIndex >= config.profiles.length) {
         return null;
     }
-    const profileUsed = config.profiles[profileIndex];
 
     return <Stack>
-        <AddArea text='Add new keybind effect' Icon={IconMusicPlus} onClick={handleAddKeybindEffect} />
-        {profileUsed.keybind_config.map((_, index) => (
+        <ButtonWithIcon text='Add new keybind effect' key={config.last_profile_index_used} Icon={IconMusicPlus} onClick={handleAddKeybindEffect} />
+        {config.profiles[profileIndex].keybind_config.map((_, index) => (
             <ProfileKeyEffectItem key={index} profileIndex={profileIndex} keybindIndex={index} />
         ))}
     </Stack>

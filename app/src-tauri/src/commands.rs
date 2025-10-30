@@ -58,9 +58,11 @@ pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<AppCo
 }
 
 #[tauri::command]
-pub fn save_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>, config: AppConfig) -> Result<(), ()> {   
+pub fn save_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>, config: AppConfig) -> Result<AppConfig, ()> {   
     let new_config_manager = Arc::new(ConfigManager::new(config));
     state.store(new_config_manager);
 
-    Ok(())
+    let config_manager = state.load();
+    let config = config_manager.get_config();
+    Ok(config)
 }

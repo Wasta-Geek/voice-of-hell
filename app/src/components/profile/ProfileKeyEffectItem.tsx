@@ -23,8 +23,9 @@ function ProfileKeyEffectItem({ profileIndex, keybindIndex }: ProfileKeyEffectIt
     const handleSelectSoundEffectType = useCallback((value: string | null) => {
         // Check if config is defined
         if (config) {
-            config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect = generateSoundEffect(value as RustSoundEffect);
-            updateConfig.mutateAsync(config);
+            let new_config = {...config};
+            new_config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect = generateSoundEffect(value as RustSoundEffect);
+            updateConfig.mutateAsync(new_config);
         }
     }, [config, profileIndex, keybindIndex]);
 
