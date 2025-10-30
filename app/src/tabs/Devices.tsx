@@ -43,7 +43,7 @@ function Devices() {
       // Call Rust command telling frontend is ready
       invoke('app_ready', {});
     });
-  }, [])
+  }, []);
 
   return (
     <Stack align="center" gap="xs">

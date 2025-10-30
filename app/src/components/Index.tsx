@@ -1,3 +1,3 @@
-import KeyEffectComponent from "./KeyEffect";
+import ButtonWithIcon from "./ButtonWithIcon";
 
-export {KeyEffectComponent};
+export { ButtonWithIcon };
