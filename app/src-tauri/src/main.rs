@@ -28,11 +28,13 @@ fn main() {
     let device_manager = DeviceManager::new();
     let config_manager = ConfigManager::default();
     let config_manager_arc = Arc::new(ArcSwap::from_pointee(config_manager));
-    let keyboard_manager = KeyboardManager::new(config_manager_arc.clone());
+
 
     // Create tauri app
     tauri::Builder::default()
-        .setup(move |app| {
+    .setup(move |app| {
+            let keyboard_manager = KeyboardManager::new(app.handle().clone());
+
             app.manage(Mutex::new(device_manager));
             app.manage(config_manager_arc);
             app.manage(Mutex::new(keyboard_manager));
@@ -44,7 +46,8 @@ fn main() {
             commands::input_device_selected,
             commands::output_device_selected,
             commands::get_config,
-            commands::save_config
+            commands::save_config,
+            commands::set_keybind_listening_state
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
