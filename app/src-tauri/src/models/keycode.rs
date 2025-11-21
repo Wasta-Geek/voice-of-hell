@@ -1,9 +1,9 @@
+use device_query::Keycode;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 // Plain duplicates from device_query crate (only add Serialize/Deserialize)
-#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize, TS)]
-#[ts(export, export_to = "../../src/bindings/")]
+#[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize, TS, Debug)]
 pub enum LocalKeycode {
     Key0,
     Key1,
@@ -70,6 +70,7 @@ pub enum LocalKeycode {
     LAlt,
     RAlt,
     Command,
+    RCommand,
     LOption,
     ROption,
     LMeta,
@@ -121,4 +122,139 @@ pub enum LocalKeycode {
     Comma,
     Dot,
     Slash,
+}
+
+impl From<Keycode> for LocalKeycode{
+    fn from(value: Keycode) -> Self {
+        match value {
+            Keycode::Key0 => LocalKeycode::Key0,
+            Keycode::Key1 => LocalKeycode::Key1,
+            Keycode::Key2 => LocalKeycode::Key2,
+            Keycode::Key3 => LocalKeycode::Key3,
+            Keycode::Key4 => LocalKeycode::Key4,
+            Keycode::Key5 => LocalKeycode::Key5,
+            Keycode::Key6 => LocalKeycode::Key6,
+            Keycode::Key7 => LocalKeycode::Key7,
+            Keycode::Key8 => LocalKeycode::Key8,
+            Keycode::Key9 => LocalKeycode::Key9,
+            Keycode::A => LocalKeycode::A,
+            Keycode::B => LocalKeycode::B,
+            Keycode::C => LocalKeycode::C,
+            Keycode::D => LocalKeycode::D,
+            Keycode::E => LocalKeycode::E,
+            Keycode::F => LocalKeycode::F,
+            Keycode::G => LocalKeycode::G,
+            Keycode::H => LocalKeycode::H,
+            Keycode::I => LocalKeycode::I,
+            Keycode::J => LocalKeycode::J,
+            Keycode::K => LocalKeycode::K,
+            Keycode::L => LocalKeycode::L,
+            Keycode::M => LocalKeycode::M,
+            Keycode::N => LocalKeycode::N,
+            Keycode::O => LocalKeycode::O,
+            Keycode::P => LocalKeycode::P,
+            Keycode::Q => LocalKeycode::Q,
+            Keycode::R => LocalKeycode::R,
+            Keycode::S => LocalKeycode::S,
+            Keycode::T => LocalKeycode::T,
+            Keycode::U => LocalKeycode::U,
+            Keycode::V => LocalKeycode::V,
+            Keycode::W => LocalKeycode::W,
+            Keycode::X => LocalKeycode::X,
+            Keycode::Y => LocalKeycode::Y,
+            Keycode::Z => LocalKeycode::Z,
+            Keycode::F1 => LocalKeycode::F1,
+            Keycode::F2 => LocalKeycode::F2,
+            Keycode::F3 => LocalKeycode::F3,
+            Keycode::F4 => LocalKeycode::F4,
+            Keycode::F5 => LocalKeycode::F5,
+            Keycode::F6 => LocalKeycode::F6,
+            Keycode::F7 => LocalKeycode::F7,
+            Keycode::F8 => LocalKeycode::F8,
+            Keycode::F9 => LocalKeycode::F9,
+            Keycode::F10 => LocalKeycode::F10,
+            Keycode::F11 => LocalKeycode::F11,
+            Keycode::F12 => LocalKeycode::F12,
+            Keycode::F13 => LocalKeycode::F13,
+            Keycode::F14 => LocalKeycode::F14,
+            Keycode::F15 => LocalKeycode::F15,
+            Keycode::F16 => LocalKeycode::F16,
+            Keycode::F17 => LocalKeycode::F17,
+            Keycode::F18 => LocalKeycode::F18,
+            Keycode::F19 => LocalKeycode::F19,
+            Keycode::F20 => LocalKeycode::F20,
+            Keycode::Escape => LocalKeycode::Escape,
+            Keycode::Space => LocalKeycode::Space,
+            Keycode::LControl => LocalKeycode::LControl,
+            Keycode::RControl => LocalKeycode::RControl,
+            Keycode::LShift => LocalKeycode::LShift,
+            Keycode::RShift => LocalKeycode::RShift,
+            Keycode::LAlt => LocalKeycode::LAlt,
+            Keycode::RAlt => LocalKeycode::RAlt,
+            Keycode::Command => LocalKeycode::Command,
+            Keycode::RCommand => LocalKeycode::RCommand,
+            Keycode::LOption => LocalKeycode::LOption,
+            Keycode::ROption => LocalKeycode::ROption,
+            Keycode::LMeta => LocalKeycode::LMeta,
+            Keycode::RMeta => LocalKeycode::RMeta,
+            Keycode::Enter => LocalKeycode::Enter,
+            Keycode::Up => LocalKeycode::Up,
+            Keycode::Down => LocalKeycode::Down,
+            Keycode::Left => LocalKeycode::Left,
+            Keycode::Right => LocalKeycode::Right,
+            Keycode::Backspace => LocalKeycode::Backspace,
+            Keycode::CapsLock => LocalKeycode::CapsLock,
+            Keycode::Tab => LocalKeycode::Tab,
+            Keycode::Home => LocalKeycode::Home,
+            Keycode::End => LocalKeycode::End,
+            Keycode::PageUp => LocalKeycode::PageUp,
+            Keycode::PageDown => LocalKeycode::PageDown,
+            Keycode::Insert => LocalKeycode::Insert,
+            Keycode::Delete => LocalKeycode::Delete,
+            Keycode::Numpad0 => LocalKeycode::Numpad0,
+            Keycode::Numpad1 => LocalKeycode::Numpad1,
+            Keycode::Numpad2 => LocalKeycode::Numpad2,
+            Keycode::Numpad3 => LocalKeycode::Numpad3,
+            Keycode::Numpad4 => LocalKeycode::Numpad4,
+            Keycode::Numpad5 => LocalKeycode::Numpad5,
+            Keycode::Numpad6 => LocalKeycode::Numpad6,
+            Keycode::Numpad7 => LocalKeycode::Numpad7,
+            Keycode::Numpad8 => LocalKeycode::Numpad8,
+            Keycode::Numpad9 => LocalKeycode::Numpad9,
+            Keycode::NumpadSubtract => LocalKeycode::NumpadSubtract,
+            Keycode::NumpadAdd => LocalKeycode::NumpadAdd,
+            Keycode::NumpadDivide => LocalKeycode::NumpadDivide,
+            Keycode::NumpadMultiply => LocalKeycode::NumpadMultiply,
+            Keycode::NumpadEquals => LocalKeycode::NumpadEquals,
+            Keycode::NumpadEnter => LocalKeycode::NumpadEnter,
+            Keycode::NumpadDecimal => LocalKeycode::NumpadDecimal,
+            Keycode::Grave => LocalKeycode::Grave,
+            Keycode::Minus => LocalKeycode::Minus,
+            Keycode::Equal => LocalKeycode::Equal,
+            Keycode::LeftBracket => LocalKeycode::LeftBracket,
+            Keycode::RightBracket => LocalKeycode::RightBracket,
+            Keycode::BackSlash => LocalKeycode::BackSlash,
+            Keycode::Semicolon => LocalKeycode::Semicolon,
+            Keycode::Apostrophe => LocalKeycode::Apostrophe,
+            Keycode::Comma => LocalKeycode::Comma,
+            Keycode::Dot => LocalKeycode::Dot,
+            Keycode::Slash => LocalKeycode::Slash,
+        }
+    }
+}
+
+pub trait VecInto<LocalKeycode> {
+    fn vec_into(self) -> Vec<LocalKeycode>;
+}
+
+impl VecInto<LocalKeycode> for Vec<Keycode> {
+    fn vec_into(self) -> Vec<LocalKeycode> {
+        self.into_iter().map(std::convert::Into::into).collect()
+    }
+}
+
+impl VecInto<LocalKeycode> for Vec<&Keycode> {
+    fn vec_into(self) -> Vec<LocalKeycode> {
+        self.into_iter().map(|item| item.clone().into()).collect()
+    }
 }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models::{keycode::LocalKeycode, sound_effects::SoundEffect};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct KeybindEffectItem {
     keycode_list: Vec<LocalKeycode>,
     sound_effect: SoundEffect,

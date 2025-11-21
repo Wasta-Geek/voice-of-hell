@@ -3,7 +3,7 @@ use arc_swap::ArcSwap;
 use tauri::{AppHandle, State};
 
 use crate::{
-    audio::device_manager::DeviceManager, emitter::emit_event, models::app_config::AppConfig,
+    audio::device_manager::DeviceManager, emitter::emit_event, models::app_config::{AppConfig, RuntimeConfig, StoredConfig},
     profile::config_manager::ConfigManager,
 };
 
@@ -50,19 +50,32 @@ pub fn output_device_selected(
 }
 
 #[tauri::command]
-pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<AppConfig, ()> {
+pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<StoredConfig, ()> {
     let config_manager = state.load();
 
     let config = config_manager.get_config();
-    Ok(config)
+    Ok(config.stored)
 }
 
 #[tauri::command]
-pub fn save_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>, config: AppConfig) -> Result<AppConfig, ()> {   
-    let new_config_manager = Arc::new(ConfigManager::new(config));
+pub fn save_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>, config: StoredConfig) -> Result<StoredConfig, ()> {   
+    let config_manager = state.load();
+    let previous_config = config_manager.get_config();
+
+    let new_config_manager = Arc::new(ConfigManager::new(AppConfig { stored: config, runtime: previous_config.runtime }));
     state.store(new_config_manager);
 
-    let config_manager = state.load();
     let config = config_manager.get_config();
-    Ok(config)
+    Ok(config.stored)
+}
+
+#[tauri::command]
+pub fn set_keybind_listening_state(state: State<'_, Arc<ArcSwap<ConfigManager>>>, is_listening: bool) -> Result<(), ()> {   
+    let config_manager = state.load();
+    let mut new_config = config_manager.get_config();
+    new_config.runtime.keybind_listening = is_listening;
+
+    let new_config_manager = Arc::new(ConfigManager::new(new_config));
+    state.store(new_config_manager);
+    Ok(())
 }

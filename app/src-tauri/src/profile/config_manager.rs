@@ -6,7 +6,7 @@ use std::{
 
 use directories::ProjectDirs;
 
-use crate::models::app_config::AppConfig;
+use crate::models::app_config::{AppConfig, StoredConfig};
 
 pub struct ConfigManager {
     app_config: AppConfig,
@@ -41,11 +41,10 @@ impl ConfigManager {
             Ok(raw_file_content) =>
             // Extract file content as JSON content
             {
-                match serde_json::from_slice::<AppConfig>(raw_file_content.as_bytes()) {
+                match serde_json::from_slice::<StoredConfig>(raw_file_content.as_bytes()) {
                     Ok(json_file_content) => {
-                        self.app_config.last_profile_index_used =
-                            json_file_content.last_profile_index_used;
-                        self.app_config.profiles = json_file_content.profiles;
+                        self.app_config.stored.last_profile_index_used = json_file_content.last_profile_index_used;
+                        self.app_config.stored.profiles = json_file_content.profiles;
                         log::info!(
                             "Config file properly read from: {:?}",
                             self.get_project_config_file_path()
@@ -86,7 +85,7 @@ impl ConfigManager {
         let mut file = File::create(config_file_path).expect("Couldn't create config file.");
         // File content to write
         let file_content =
-            serde_json::to_string(&self.app_config).expect("Couldn't serialized config.");
+            serde_json::to_string(&self.app_config.stored).expect("Couldn't serialized config.");
 
         // Save config in file
         file.write(file_content.as_bytes())

@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc, serde::ts_milliseconds_option};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum SoundEffect {
     DoNothing,
