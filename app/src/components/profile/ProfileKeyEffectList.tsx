@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { Select, Stack } from '@mantine/core';
+import { Grid } from '@mantine/core';
 import { IconMusicPlus } from '@tabler/icons-react';
 
-import { useGetConfig, useUpdateConfig } from '@/hooks';
+import { useConfig } from '@/hooks';
 import { RustSoundEffect } from '@/types';
 import ProfileKeyEffectItem from '@/components/profile/ProfileKeyEffectItem';
 import { ButtonWithIcon } from '@/components';
@@ -10,24 +10,23 @@ import { ButtonWithIcon } from '@/components';
 type ProfileKeyEffectProps = {};
 
 function ProfileKeyEffectList({ }: ProfileKeyEffectProps) {
-    const { data: config } = useGetConfig();
-    const updateConfig = useUpdateConfig();
+    const [config, setConfig] = useConfig();
 
     const handleAddKeybindEffect = useCallback(() => {
         // Check if config is defined
         if (config && config.last_profile_index_used) {
             const profileIndex = parseInt(config.last_profile_index_used);
 
-            let new_config = {...config};
+            let new_config = { ...config };
             // Add new empty keybind
             new_config.profiles[profileIndex].keybind_config.push({
                 keycode_list: [],
                 sound_effect: { type: RustSoundEffect.DoNothing },
             });
 
-            updateConfig.mutateAsync(new_config);
+            setConfig(new_config);
         }
-    }, [config]);
+    }, [config, setConfig]);
 
     // Check if a profile is currently used
     if (!config || !config?.last_profile_index_used) {
@@ -40,12 +39,16 @@ function ProfileKeyEffectList({ }: ProfileKeyEffectProps) {
         return null;
     }
 
-    return <Stack>
+    return <>
         <ButtonWithIcon text='Add new keybind effect' key={config.last_profile_index_used} Icon={IconMusicPlus} onClick={handleAddKeybindEffect} />
-        {config.profiles[profileIndex].keybind_config.map((_, index) => (
-            <ProfileKeyEffectItem key={index} profileIndex={profileIndex} keybindIndex={index} />
-        ))}
-    </Stack>
+        <Grid gutter="xs">
+            {config.profiles[profileIndex].keybind_config.map((_, index) => (
+                <Grid.Col span="auto" key={index}>
+                    <ProfileKeyEffectItem profileIndex={profileIndex} keybindIndex={index} />
+                </Grid.Col>
+            ))}
+        </Grid>
+    </>
 }
 
 export default ProfileKeyEffectList;

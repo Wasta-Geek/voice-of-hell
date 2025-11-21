@@ -2,7 +2,7 @@ import { FileInput } from "@mantine/core";
 import { useCallback, useState } from "react";
 
 import { RustSoundEffect, SoundEffect } from "@/types";
-import { useGetConfig, useUpdateConfig } from "@/hooks";
+import { useConfig } from "@/hooks";
 
 type KeyEffectFileSelectorProps = {
     profileIndex: number,
@@ -10,8 +10,7 @@ type KeyEffectFileSelectorProps = {
 };
 
 function KeyEffectFileSelector({ profileIndex, keybindIndex }: KeyEffectFileSelectorProps) {
-    const { data: config } = useGetConfig();
-    const updateConfig = useUpdateConfig();
+    const [config, setConfig] = useConfig();
 
     if (!config) return null;
 
@@ -24,12 +23,10 @@ function KeyEffectFileSelector({ profileIndex, keybindIndex }: KeyEffectFileSele
         soundEffect.name = file?.name ?? "";
         soundEffect.lastModified = file?.lastModified ?? null;
         soundEffect.path = file?.webkitRelativePath ?? null;
-        updateConfig.mutateAsync(config);
+        setConfig(config);
     }, []);
 
     return <FileInput
-        label="Sound file to play"
-        description="MP3 / MP4 / wav"
         placeholder="Select a sound file"
         value={value}
         onChange={handleSelectFile}

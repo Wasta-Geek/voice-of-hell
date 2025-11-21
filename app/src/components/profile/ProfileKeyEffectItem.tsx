@@ -1,12 +1,13 @@
-import { Group, Select, SelectProps, Stack } from "@mantine/core";
+import { Group, Paper, Select, SelectProps, Stack } from "@mantine/core";
 import { useCallback } from "react";
 import { IconFileMusic, IconFileNeutralFilled, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons-react";
 
 import { RustSoundEffect, SoundEffectType } from "../../types";
-import { useGetConfig, useUpdateConfig } from "../../hooks";
+import { useConfig } from "../../hooks";
 import { generateSoundEffect } from "../../types/SoundEffect";
 import KeyEffectVolumeSlider from "./key_effect/VolumeSlider";
 import KeyEffectFileSelector from "./key_effect/FileSelector";
+import Keybind from "./key_effect/Keybind";
 
 type ProfileKeyEffectItemProps = {
     profileIndex: number,
@@ -14,8 +15,7 @@ type ProfileKeyEffectItemProps = {
 };
 
 function ProfileKeyEffectItem({ profileIndex, keybindIndex }: ProfileKeyEffectItemProps) {
-    const { data: config } = useGetConfig();
-    const updateConfig = useUpdateConfig();
+    const [config, setConfig] = useConfig();
     const soundEffectTypeList = Object.entries(SoundEffectType).map(([value, label]) => ({ label: label, value: value }));
 
     if (!config) return null;
@@ -23,9 +23,9 @@ function ProfileKeyEffectItem({ profileIndex, keybindIndex }: ProfileKeyEffectIt
     const handleSelectSoundEffectType = useCallback((value: string | null) => {
         // Check if config is defined
         if (config) {
-            let new_config = {...config};
+            let new_config = { ...config };
             new_config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect = generateSoundEffect(value as RustSoundEffect);
-            updateConfig.mutateAsync(new_config);
+            setConfig(new_config);
         }
     }, [config, profileIndex, keybindIndex]);
 
@@ -64,17 +64,19 @@ function ProfileKeyEffectItem({ profileIndex, keybindIndex }: ProfileKeyEffectIt
     }
 
     return (
-        <Stack bg="gray">
-            <Select
-                label="Select an effect"
-                data={soundEffectTypeList}
-                value={config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect.type}
-                onChange={handleSelectSoundEffectType}
-                size="md"
-                renderOption={renderSelectOption}
-            />
-            <KeyEffectSubElements profileIndex={profileIndex} keybindIndex={keybindIndex} />
-        </Stack>
+        <Paper shadow="md" radius="lg" withBorder miw="200px">
+            <Stack align="center" gap="sm" >
+                <Select
+                    data={soundEffectTypeList}
+                    value={config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect.type}
+                    onChange={handleSelectSoundEffectType}
+                    size="sm"
+                    renderOption={renderSelectOption}
+                />
+                <KeyEffectSubElements profileIndex={profileIndex} keybindIndex={keybindIndex} />
+                <Keybind profileIndex={profileIndex} keybindIndex={keybindIndex} />
+            </Stack>
+        </Paper>
     );
 }
 

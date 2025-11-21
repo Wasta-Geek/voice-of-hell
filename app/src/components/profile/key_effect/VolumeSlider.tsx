@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { Slider } from "@mantine/core";
 
 import { RustSoundEffect, SoundEffect } from "@/types";
-import { useGetConfig, useUpdateConfig } from "@/hooks";
+import { useConfig } from "@/hooks";
 
 type KeyEffectVolumeSliderProps = {
     profileIndex: number,
@@ -10,8 +10,7 @@ type KeyEffectVolumeSliderProps = {
 };
 
 function KeyEffectVolumeSlider({ profileIndex, keybindIndex }: KeyEffectVolumeSliderProps) {
-    const { data: config } = useGetConfig();
-    const updateConfig = useUpdateConfig();
+    const [config, setConfig] = useConfig();
 
     if (!config) return null;
 
@@ -31,11 +30,13 @@ function KeyEffectVolumeSlider({ profileIndex, keybindIndex }: KeyEffectVolumeSl
             const soundEffectTyped = config.profiles[profileIndex].keybind_config[keybindIndex].sound_effect as Extract<SoundEffect, { type: RustSoundEffect.IncreaseVolume | RustSoundEffect.DecreaseVolume }>;
 
             soundEffectTyped.volume = volume;
-            updateConfig.mutateAsync(config);
+            setConfig(config);
         }
     }, [config, profileIndex, keybindIndex]);
 
-    return <Slider color="blue" value={volume} onChange={handleVolumeChanged} onChangeEnd={handleVolumeChangedEnd} />
+    return (
+        <Slider miw="200px" color="blue" value={volume} onChange={handleVolumeChanged} onChangeEnd={handleVolumeChangedEnd} />
+    );
 };
 
 export default KeyEffectVolumeSlider;

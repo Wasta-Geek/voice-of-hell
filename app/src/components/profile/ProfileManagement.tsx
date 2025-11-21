@@ -3,15 +3,14 @@ import { IconSquarePlus, IconTrash } from "@tabler/icons-react";
 import { useCallback } from "react";
 import { useDisclosure } from "@mantine/hooks";
 
-import { useGetConfig, useUpdateConfig } from "@/hooks";
+import { useConfig } from "@/hooks";
 import NewProfile from "@/components/profile/NewProfile";
 
 
 type ProfileManagementProps = {};
 
 function ProfileManagement({}: ProfileManagementProps) {
-    const { data: config } = useGetConfig();
-    const updateConfig = useUpdateConfig();
+    const [config, setConfig] = useConfig();
     const [opened, { open, close }] = useDisclosure(false);
 
     const handleSelectProfile = useCallback((value: string | null) => {
@@ -19,7 +18,7 @@ function ProfileManagement({}: ProfileManagementProps) {
             let new_config = {...config};
             new_config.last_profile_index_used = value;
             // Save config with last profile used
-            updateConfig.mutateAsync(new_config);
+            setConfig(new_config);
         }
     }, [config])
 
@@ -33,7 +32,7 @@ function ProfileManagement({}: ProfileManagementProps) {
             // Reset current profile selected
             new_config.last_profile_index_used = null;
             // Save config with deleted profile
-            updateConfig.mutateAsync(new_config);
+            setConfig(new_config);
         }
     }, [config]);
 

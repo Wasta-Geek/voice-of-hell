@@ -1,13 +1,12 @@
 import { ActionIcon, Stack, TextInput } from '@mantine/core';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 import { ChangeEvent, useCallback, useState } from 'react';
-import { useGetConfig, useUpdateConfig } from '../../hooks';
+import { useConfig } from '../../hooks';
 
 function NewProfile({ closeCallback }: { closeCallback: () => void }) {
   const [newProfileName, setNewProfileName] = useState<string>('');
   const [errorString, setErrorString] = useState<string>('');
-  const { data: config } = useGetConfig();
-  const updateConfig = useUpdateConfig();
+  const [config, setConfig] = useConfig();
   const isSaveButtonDisabled = newProfileName.length == 0 || errorString.length > 0;
 
   // Handler that manages when a profile name is given in the text input
@@ -33,7 +32,7 @@ function NewProfile({ closeCallback }: { closeCallback: () => void }) {
       // Add new profile to existing config
       config.profiles.push(newProfile);
       // Save config with added profile
-      updateConfig.mutateAsync(config).then(() => closeCallback());
+      setConfig(config).then(() => closeCallback());
     }
   }, [newProfileName, closeCallback]);
 
