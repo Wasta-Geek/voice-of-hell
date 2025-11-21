@@ -1,6 +1,6 @@
-import { DEFAULT_THEME } from '@mantine/core';
+import { createTheme, DEFAULT_THEME, mergeMantineTheme } from '@mantine/core';
 
-export const theme = DEFAULT_THEME;
-// createTheme({
+const themeOverride = createTheme({
+});
 
-// });
+export const theme = mergeMantineTheme(DEFAULT_THEME, themeOverride);
