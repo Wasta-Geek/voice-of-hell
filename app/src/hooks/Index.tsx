@@ -1,3 +1,4 @@
-import { useGetConfig, useUpdateConfig } from "./useConfig";
+import { useConfig } from "./useConfig";
+import { useKeyboard } from "./useKeyInput";
 
-export { useGetConfig, useUpdateConfig };
+export { useConfig, useKeyboard };
