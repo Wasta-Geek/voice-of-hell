@@ -1,5 +1,6 @@
 # voice-of-hell
-Soundboard project in the same line of my previous project 'voice-changer' in C++, but in Rust.
+
+Soundboard project in Rust with a small GUI using Tauri crate and React as frontend framework (Mantine framework).
 
 ## Formatting
 
@@ -11,7 +12,12 @@ Clippy is used for linting purpose, default settings applied.
 
 ## Install on WSL
 
+```bash
+## Install Rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+## Install project
+$TODO
+```
 
 ## TODO (for personal progress)
 
@@ -19,14 +25,24 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 - System tray app
 - GUI:
   - ~~device selection~~
-  - [WIP] Sound set up (key / sound file managed / volume for each sound)
+  - ~~Sound set up (key / sound file managed)~~
 - Audio processing:
   - Play file (wav)
   - Add effects:
     - Echo
-    - Record && replay (both input and output)
-  - Stop played files / effects
-- [Windows] app installer
+    - Record && replay input
+    - Record && replay output (what's emitted in output device -> replay external voices)
+    - High pitch voice
+    - Low pitch voice
+    - Simulate "lag" effect (drop some frames ?)
+  - Clear played files / effects
+- [precommit]
+  - Lint (+ force every classes / function commented)
+  - Format
+- [CI/CD]
+  - Binary build
+  - Testing
+- [R&D] Allow to select a keyboard that will entirely be managed by the app / ignored by OS
 - [R&D] Create a virtual audio device ? (would replace VCable)
 
 ## Errors
