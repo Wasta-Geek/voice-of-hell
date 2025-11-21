@@ -38,3 +38,5 @@ rust-project.json
 
 node_modules
 gen
+dist
+bindings
