@@ -1,13 +1,13 @@
 [package]
 name = "voice-of-hell"
 version = "0.0.1"
-edition = "2021"
+edition = "2024"
 keywords = []
 license-file = "LICENSE"
 description = "A soundboard to creates chaos."
 repository = "https://github.com/Wasta-Geek/voice-of-hell.git"
 authors = ["Corentin Ducatez <wasta.geek@gmail.com>"]
-rust-version = "1.76"
+rust-version = "1.91.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
