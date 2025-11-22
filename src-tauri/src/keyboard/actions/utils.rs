@@ -1,2 +1,1 @@
-pub fn mute_all_effects () {
-}
+pub fn mute_all_effects() {}

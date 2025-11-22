@@ -124,7 +124,7 @@ pub enum LocalKeycode {
     Slash,
 }
 
-impl From<Keycode> for LocalKeycode{
+impl From<Keycode> for LocalKeycode {
     fn from(value: Keycode) -> Self {
         match value {
             Keycode::Key0 => LocalKeycode::Key0,

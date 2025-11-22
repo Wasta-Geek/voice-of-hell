@@ -2,5 +2,5 @@ use crate::{audio::device_manager::DeviceManager, profile::config_manager::Confi
 
 pub struct SharedState {
     pub device_manager: DeviceManager,
-    pub config_manager: ConfigManager
+    pub config_manager: ConfigManager,
 }

@@ -1,7 +1,7 @@
 use cpal::{InputCallbackInfo, OutputCallbackInfo, StreamError};
 use ringbuf::{
-    traits::{Consumer, Producer},
     HeapCons, HeapProd,
+    traits::{Consumer, Producer},
 };
 
 pub fn stream_error_callback(error: StreamError) {

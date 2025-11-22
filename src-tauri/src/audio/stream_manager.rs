@@ -1,8 +1,8 @@
 use cpal::{
-    traits::{DeviceTrait, StreamTrait},
     Device, Stream, StreamConfig,
+    traits::{DeviceTrait, StreamTrait},
 };
-use ringbuf::{traits::Split, HeapRb};
+use ringbuf::{HeapRb, traits::Split};
 
 use crate::{
     audio::{

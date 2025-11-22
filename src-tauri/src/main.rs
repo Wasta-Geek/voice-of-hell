@@ -29,10 +29,9 @@ fn main() {
     let config_manager = ConfigManager::default();
     let config_manager_arc = Arc::new(ArcSwap::from_pointee(config_manager));
 
-
     // Create tauri app
     tauri::Builder::default()
-    .setup(move |app| {
+        .setup(move |app| {
             let keyboard_manager = KeyboardManager::new(app.handle().clone());
 
             app.manage(Mutex::new(device_manager));

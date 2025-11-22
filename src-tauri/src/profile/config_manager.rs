@@ -43,7 +43,8 @@ impl ConfigManager {
             {
                 match serde_json::from_slice::<StoredConfig>(raw_file_content.as_bytes()) {
                     Ok(json_file_content) => {
-                        self.app_config.stored.last_profile_index_used = json_file_content.last_profile_index_used;
+                        self.app_config.stored.last_profile_index_used =
+                            json_file_content.last_profile_index_used;
                         self.app_config.stored.profiles = json_file_content.profiles;
                         log::info!(
                             "Config file properly read from: {:?}",
