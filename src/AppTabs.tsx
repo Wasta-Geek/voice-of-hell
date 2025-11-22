@@ -1,8 +1,7 @@
-import { Tabs } from '@mantine/core';
+import { Tabs } from "@mantine/core";
 
-import Devices from './tabs/Devices';
-import Profiles from './tabs/Profiles';
-
+import Devices from "./tabs/Devices";
+import Profiles from "./tabs/Profiles";
 
 function AppTabs() {
   return (
@@ -12,8 +11,12 @@ function AppTabs() {
         <Tabs.Tab value="profiles">Profiles</Tabs.Tab>
       </Tabs.List>
 
-      <Tabs.Panel value="devices"><Devices/></Tabs.Panel>
-      <Tabs.Panel value="profiles"><Profiles/></Tabs.Panel>
+      <Tabs.Panel value="devices">
+        <Devices />
+      </Tabs.Panel>
+      <Tabs.Panel value="profiles">
+        <Profiles />
+      </Tabs.Panel>
     </Tabs>
   );
 }

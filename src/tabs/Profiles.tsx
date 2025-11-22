@@ -1,15 +1,13 @@
-import { Stack } from '@mantine/core';
+import { Stack } from "@mantine/core";
 
-import { ProfileKeyEffectList, ProfileManagement } from '@/components/profile';
-
+import { ProfileKeyEffectList, ProfileManagement } from "@/components/profile";
 
 // Tab: Profile
 function Profiles() {
-
   return (
-    <Stack align='center'>
-      <ProfileManagement/>
-      <ProfileKeyEffectList/>
+    <Stack align="center">
+      <ProfileManagement />
+      <ProfileKeyEffectList />
     </Stack>
   );
 }

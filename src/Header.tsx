@@ -1,4 +1,4 @@
-import { Grid, Slider, Center } from '@mantine/core';
+import { Grid, Slider, Center } from "@mantine/core";
 
 import "./App.css";
 
@@ -9,13 +9,8 @@ function Header() {
         <p>Voice of Hell</p>
       </Grid.Col>
       <Grid.Col span={2} offset={2}>
-          <Center>Volume</Center>
-          <Slider
-            color="green"
-            size="md"
-            defaultValue={100}
-            thumbSize={16}
-          />
+        <Center>Volume</Center>
+        <Slider color="green" size="md" defaultValue={100} thumbSize={16} />
       </Grid.Col>
     </Grid>
   );
