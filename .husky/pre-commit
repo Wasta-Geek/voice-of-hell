@@ -1,2 +1,5 @@
 ## Checks for Rust format style error
 git diff --name-only --cached -- '*.rs' | xargs -r rustfmt --check
+
+## Checks for ESLint / format errors
+pnpm dlx lint-staged
