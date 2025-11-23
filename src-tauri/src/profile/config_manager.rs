@@ -8,12 +8,16 @@ use directories::ProjectDirs;
 
 use crate::models::app_config::{AppConfig, StoredConfig};
 
+/// Manages app config
 pub struct ConfigManager {
+    /// App config
     app_config: AppConfig,
+    /// Path to project config directory
     project_path_dir: PathBuf,
 }
 
 impl ConfigManager {
+    /// Create a [ConfigManager] object with the given app_config
     pub fn new(app_config: AppConfig) -> Self {
         let project_dir = Self::get_project_dir_instance();
         let project_path_dir = project_dir.config_dir();
@@ -24,14 +28,19 @@ impl ConfigManager {
         }
     }
 
+    /// Get current config
     pub fn get_config(&self) -> AppConfig {
-        return self.app_config.clone();
+        self.app_config.clone()
     }
 
+    /// Replace config with given config
+    ///
     pub fn put_config(&mut self, config: AppConfig) {
         self.app_config = config;
     }
 
+    /// Retrieves config from filesystem
+    ///
     pub fn read_config_from_system(&mut self) {
         // Config file path
         let config_file_path = self.get_project_config_file_path();
@@ -68,16 +77,17 @@ impl ConfigManager {
         };
     }
 
+    /// Save config to filesystem
+    ///
     pub fn save_config(&self) {
         // Check if config directory exists; if not -> creates
         if !self.project_path_dir.exists() {
-            fs::create_dir_all(self.project_path_dir.clone()).expect(
-                format!(
+            fs::create_dir_all(self.project_path_dir.clone()).unwrap_or_else(|_| {
+                panic!(
                     "Couldn't create config directory at {:?}.",
                     self.project_path_dir
                 )
-                .as_str(),
-            );
+            });
         }
         // Config file path
         let config_file_path = self.get_project_config_file_path();
@@ -89,16 +99,20 @@ impl ConfigManager {
             serde_json::to_string(&self.app_config.stored).expect("Couldn't serialized config.");
 
         // Save config in file
-        file.write(file_content.as_bytes())
+        file.write_all(file_content.as_bytes())
             .expect("Couldn't write config.");
 
         log::info!("Config file saved at {:?}.", self.project_path_dir);
     }
 
+    /// Returns the full path to the config file to used
+    ///
     fn get_project_config_file_path(&self) -> PathBuf {
-        return self.project_path_dir.join("config.json");
+        self.project_path_dir.join("config.json")
     }
 
+    /// Returns a ProjectDirs object
+    ///
     fn get_project_dir_instance() -> ProjectDirs {
         ProjectDirs::from("", "WastaGeek", env!("CARGO_PKG_NAME"))
             .expect("Couldn't open project config path.")

@@ -2,7 +2,9 @@ use device_query::Keycode;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-// Plain duplicates from device_query crate (only add Serialize/Deserialize)
+/// Represents a keyboard key
+/// Plain duplicates from device_query crate (only add Serialize/Deserialize)
+#[allow(clippy::missing_docs_in_private_items)]
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize, TS, Debug)]
 pub enum LocalKeycode {
     Key0,
@@ -243,7 +245,9 @@ impl From<Keycode> for LocalKeycode {
     }
 }
 
+/// Adapter trait: convert a Vec<X> to a Vec<LocalKeycode>
 pub trait VecInto<LocalKeycode> {
+    /// Convert a Vec<X> to a Vec<LocalKeycode>
     fn vec_into(self) -> Vec<LocalKeycode>;
 }
 
@@ -255,6 +259,6 @@ impl VecInto<LocalKeycode> for Vec<Keycode> {
 
 impl VecInto<LocalKeycode> for Vec<&Keycode> {
     fn vec_into(self) -> Vec<LocalKeycode> {
-        self.into_iter().map(|item| item.clone().into()).collect()
+        self.into_iter().map(|item| (*item).into()).collect()
     }
 }

@@ -12,6 +12,7 @@ use crate::{
     error::MyError,
 };
 
+/// Audio stream manager
 pub struct StreamManager {
     /// Input stream, None if stream not currently opened
     input_stream: Option<Stream>,
@@ -46,7 +47,7 @@ impl StreamManager {
 
         // Create input stream
         match input_device.build_input_stream(
-            &config,
+            config,
             move |data: &[f32], callback_info| input_callback(data, callback_info, &mut producer),
             stream_error_callback,
             None,
@@ -60,7 +61,7 @@ impl StreamManager {
 
         // Create output stream
         match output_device.build_output_stream(
-            &config,
+            config,
             move |data: &mut [f32], callback_info| {
                 output_callback(data, callback_info, &mut consumer)
             },
@@ -78,10 +79,10 @@ impl StreamManager {
 
     /// Properly clear input / output streams (if opened)
     pub fn clear_streams(&mut self) {
-        if let Some(_) = self.input_stream.take() {
+        if self.input_stream.take().is_some() {
             log::info!("Previous input stream cleared.");
         }
-        if let Some(_) = self.output_stream.take() {
+        if self.output_stream.take().is_some() {
             log::info!("Previous output stream cleared.");
         }
     }

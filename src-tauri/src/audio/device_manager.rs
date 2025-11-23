@@ -127,7 +127,7 @@ impl DeviceManager {
         self.stream_manager
             .start_streams(input_device, output_device, &config)?;
 
-        return Ok(());
+        Ok(())
     }
 
     /// [temporary] Find a suitable sample rate
@@ -174,6 +174,7 @@ impl DeviceManager {
         }
     }
 
+    /// Find an audio device from it's display name
     fn find_device_from_name(
         &self,
         target_device_name: &str,
@@ -188,6 +189,6 @@ impl DeviceManager {
                 return Ok(device.clone());
             }
         }
-        return Err(());
+        Err(())
     }
 }

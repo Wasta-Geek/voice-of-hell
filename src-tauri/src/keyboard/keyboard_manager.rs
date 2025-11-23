@@ -15,8 +15,11 @@ use crate::{
     profile::config_manager::ConfigManager,
 };
 
+/// Manage keyboard input / state
 pub struct KeyboardManager {
+    /// Internal thread handle
     thread_handle: Option<JoinHandle<()>>,
+    /// Atomic boolean used by internal thread as conditional stop
     thread_should_run: Arc<AtomicBool>,
 }
 
@@ -55,11 +58,9 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
         let key_pressed_list: HashSet<Keycode> = device_state.get_keys().into_iter().collect();
         let key_released_list: HashSet<_> = previous_key_pressed_list
             .difference(&key_pressed_list)
-            .into_iter()
             .collect();
         let new_key_pressed_list: HashSet<_> = key_pressed_list
             .difference(&previous_key_pressed_list)
-            .into_iter()
             .collect();
 
         let config_manager_state = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
@@ -73,7 +74,7 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
         // }
 
         if config.runtime.keybind_listening
-            && (new_key_pressed_list.len() > 0 || key_released_list.len() > 0)
+            && (!new_key_pressed_list.is_empty() || !key_released_list.is_empty())
         {
             let emit_result = app_handle.emit(
                 "keyboard_state_changed",
@@ -85,7 +86,10 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
                 },
             );
             if let Err(error) = emit_result {
-                log::error!("Couldn't send event for keyboard state changed")
+                log::error!(
+                    "Couldn't send event for keyboard state changed, error: {}",
+                    error
+                )
             }
         }
         previous_key_pressed_list = key_pressed_list;
