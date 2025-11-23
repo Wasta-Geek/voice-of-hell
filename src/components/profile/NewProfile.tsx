@@ -3,7 +3,15 @@ import { IconDeviceFloppy } from "@tabler/icons-react";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useConfig } from "../../hooks";
 
-function NewProfile({ closeCallback }: { closeCallback: () => void }) {
+type NewProfileProps = {
+  closeCallback: () => void;
+};
+
+/**
+ * Component for feature: new profile
+ * @param {NewProfileProps} props component prop
+ */
+function NewProfile({ closeCallback }: NewProfileProps) {
   const [newProfileName, setNewProfileName] = useState<string>("");
   const [errorString, setErrorString] = useState<string>("");
   const [config, setConfig] = useConfig();

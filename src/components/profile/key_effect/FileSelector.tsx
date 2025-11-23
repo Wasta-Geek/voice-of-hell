@@ -9,6 +9,10 @@ type KeyEffectFileSelectorProps = {
   keybindIndex: number;
 };
 
+/**
+ * Sub-component to uses for each sound effect config that needs a file associated
+ * @param {KeybindProps} props component prop
+ */
 function KeyEffectFileSelector({
   profileIndex,
   keybindIndex,

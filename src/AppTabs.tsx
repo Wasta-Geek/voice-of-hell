@@ -3,6 +3,9 @@ import { Tabs } from "@mantine/core";
 import Devices from "./tabs/Devices";
 import Profiles from "./tabs/Profiles";
 
+/**
+ * App tabs component
+ */
 function AppTabs() {
   return (
     <Tabs>

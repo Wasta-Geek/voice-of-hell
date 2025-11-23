@@ -1,2 +1,2 @@
 ## Checks for linting / format errors
-pnpm dlx lint-staged
+pnpm dlx lint-staged --no-stash

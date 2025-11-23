@@ -9,6 +9,10 @@ type KeyEffectVolumeSliderProps = {
   keybindIndex: number;
 };
 
+/**
+ * Sub-component to uses for sound effect config needing a volume associated
+ * @param {KeyEffectVolumeSliderProps} props component prop
+ */
 function KeyEffectVolumeSlider({
   profileIndex,
   keybindIndex,

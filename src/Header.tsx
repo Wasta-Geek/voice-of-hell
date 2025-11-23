@@ -2,6 +2,9 @@ import { Grid, Slider, Center } from "@mantine/core";
 
 import "./App.css";
 
+/**
+ * App header component
+ */
 function Header() {
   return (
     <Grid justify="center" align="center">

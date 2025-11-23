@@ -3,7 +3,9 @@ import { invoke } from "@tauri-apps/api/core";
 
 import { AppConfig } from "@/types/AppConfig";
 
-// Hook to use for managing config
+/**
+ * Hook to use for managing config
+ */
 export function useConfig() {
   const queryClient = useQueryClient();
   const configMutation = useMutation({

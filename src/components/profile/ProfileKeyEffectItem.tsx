@@ -20,6 +20,10 @@ type ProfileKeyEffectItemProps = {
   keybindIndex: number;
 };
 
+/**
+ * Component representing a key effect item
+ * @param {ProfileKeyEffectItemProps} props component prop
+ */
 function ProfileKeyEffectItem({
   profileIndex,
   keybindIndex,
@@ -67,6 +71,11 @@ function ProfileKeyEffectItem({
     </Group>
   );
 
+  /**
+   * Component representing a key effect item
+   * @param {number} profileIndex defines which profile Index represented
+   * @param {number} keybindIndex defines which keybind Index represented
+   */
   function KeyEffectSubElements({
     profileIndex,
     keybindIndex,

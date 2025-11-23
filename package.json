@@ -34,6 +34,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^61.4.1",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.5.0",
     "lint-staged": "^16.2.7",
@@ -43,7 +44,9 @@
     "vite": "^5.3.1",
     "vite-tsconfig-paths": "^5.1.4"
   },
-  "prettier": {},
+  "prettier": {
+    "endOfLine": "lf"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -52,11 +55,11 @@
   "lint-staged": {
     "src/**/*.{js, jsx,ts,tsx}": [
       "pnpm run lint_js",
-      "pnpm dlx prettier --check --ignore-unknown"
+      "pnpm dlx prettier --write --ignore-unknown"
     ],
     "src-tauri/**/.rs": [
-      "rustfmt --check --manifest-path=src-tauri/Cargo.toml",
-      "pnpm run lint_rust"
+      "pnpm run lint_rust",
+      "rustfmt --check --manifest-path=src-tauri/Cargo.toml"
     ]
   }
 }

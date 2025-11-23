@@ -7,6 +7,9 @@ import { RustSoundEffect } from "@/types";
 import ProfileKeyEffectItem from "@/components/profile/ProfileKeyEffectItem";
 import { ButtonWithIcon } from "@/components";
 
+/**
+ * Component representing a profile -> key effect list
+ */
 function ProfileKeyEffectList() {
   const [config, setConfig] = useConfig();
 
