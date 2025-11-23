@@ -1,42 +1,4 @@
 {
-  "build": {
-    "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://localhost:8000",
-    "beforeBuildCommand": "pnpm build",
-    "frontendDist": "../dist"
-  },
-  "bundle": {
-    "active": true,
-    "category": "DeveloperTool",
-    "copyright": "",
-    "targets": "all",
-    "externalBin": [],
-    "icon": [
-      "../src/icons/icon.icns",
-      "../src/icons/icon.ico"
-    ],
-    "windows": {
-      "certificateThumbprint": null,
-      "digestAlgorithm": "sha256",
-      "timestampUrl": ""
-    },
-    "longDescription": "",
-    "macOS": {
-      "entitlements": null,
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
-    },
-    "resources": [
-    ],
-    "shortDescription": "",
-    "linux": {
-      "deb": {
-        "depends": []
-      }
-    }
-  },
   "productName": "Voice of Hell",
   "mainBinaryName": "Voice of Hell",
   "version": "0.0.1",
@@ -58,6 +20,40 @@
     },
     "security": {
       "csp": null
+    }
+  },
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:8000",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../src/dist"
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": ["../src/icons/icon.icns", "../src/icons/icon.ico"],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "linux": {
+      "deb": {
+        "depends": []
+      }
     }
   }
 }

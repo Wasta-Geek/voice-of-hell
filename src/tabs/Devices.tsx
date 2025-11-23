@@ -7,12 +7,18 @@ type AudioDevice = {
   name: string;
 };
 
+/**
+ * Device tab
+ */
 function Devices() {
   // TODO Move into an external component ?
   const [inputDeviceList, setInputDeviceList] = useState<AudioDevice[]>([]);
   const [outputDeviceList, setOutputDeviceList] = useState<AudioDevice[]>([]);
 
-  // Handler called when input device selected changed
+  /**
+   * Handler called when input device selected changed
+   * @param event Html component
+   */
   async function handleInputDeviceOnChange(
     event: ChangeEvent<HTMLSelectElement>,
   ) {
@@ -21,6 +27,10 @@ function Devices() {
     }
   }
 
+  /**
+   * Handler called when output device selected changed
+   * @param event Html component
+   */
   // Handler called when output device selected changed
   async function handleOutputDeviceOnChange(
     event: ChangeEvent<HTMLSelectElement>,

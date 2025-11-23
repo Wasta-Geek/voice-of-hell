@@ -1,15 +1,17 @@
 import { Button } from "@mantine/core";
 import { type Icon as TablerIcon } from "@tabler/icons-react";
 
-function ButtonWithIcon({
-  text,
-  Icon,
-  onClick,
-}: {
+type ButtonWithIconProps = {
   text: string;
   Icon: TablerIcon;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
-}) {
+};
+
+/**
+ * App header component
+ * @param {ButtonWithIconProps} props component prop
+ */
+function ButtonWithIcon({ text, Icon, onClick }: ButtonWithIconProps) {
   const icon = <Icon />;
 
   return (

@@ -9,6 +9,10 @@ type KeybindProps = {
   keybindIndex: number;
 };
 
+/**
+ * Sub-component to uses for each sound effect that could be assigned to a keybind
+ * @param {KeybindProps} props component prop
+ */
 function Keybind({ profileIndex, keybindIndex }: KeybindProps) {
   const [popOverOpened, setPopOverOpened] = useState(false);
   const [config, setConfig] = useConfig();

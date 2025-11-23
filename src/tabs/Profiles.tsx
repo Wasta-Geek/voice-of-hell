@@ -2,7 +2,9 @@ import { Stack } from "@mantine/core";
 
 import { ProfileKeyEffectList, ProfileManagement } from "@/components/profile";
 
-// Tab: Profile
+/**
+ * Profile tab
+ */
 function Profiles() {
   return (
     <Stack align="center">

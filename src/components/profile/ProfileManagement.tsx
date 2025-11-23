@@ -6,6 +6,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { useConfig } from "@/hooks";
 import NewProfile from "@/components/profile/NewProfile";
 
+/**
+ * Component for feature: profile selection / delete
+ */
 function ProfileManagement() {
   const [config, setConfig] = useConfig();
   const [opened, { open, close }] = useDisclosure(false);

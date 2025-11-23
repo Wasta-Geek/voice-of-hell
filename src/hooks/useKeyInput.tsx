@@ -2,7 +2,10 @@ import { useEffect, useRef } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { KeyboardStateType } from "@/types/KeyboardState";
 
-// Hook for using keyboard (callback given will be called for each keyboard state changes)
+/**
+ * Hook for using keyboard
+ * @param callback method to calls at every keyboard state changed
+ */
 export function useKeyboard(
   callback: null | ((keyboardState: KeyboardStateType) => void),
 ) {

@@ -3,13 +3,21 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+/// Module: audio
 pub(crate) mod audio;
+/// Module: deals with Tauri commands
 pub(crate) mod commands;
+/// Module: emit Tauri event
 pub(crate) mod emitter;
+/// Module: custom errors
 pub(crate) mod error;
+/// Module: keyboard management
 pub(crate) mod keyboard;
+/// Module: logging
 pub(crate) mod log;
+/// Module: data models
 pub(crate) mod models;
+/// Module: profiles
 pub(crate) mod profile;
 
 use std::sync::{Arc, Mutex};
@@ -51,19 +59,16 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app_handle, event| {
-            match event {
-                tauri::RunEvent::ExitRequested { .. } => {
-                    let keyboard_manager_mutex = app_handle.state::<Mutex<KeyboardManager>>();
-                    let mut keyboard_manager = keyboard_manager_mutex.lock().unwrap();
-                    keyboard_manager.exit_thread();
+            if let tauri::RunEvent::ExitRequested { .. } = event {
+                let keyboard_manager_mutex = app_handle.state::<Mutex<KeyboardManager>>();
+                let mut keyboard_manager = keyboard_manager_mutex.lock().unwrap();
+                keyboard_manager.exit_thread();
 
-                    let config_manager_arc = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
-                    let config_manager = config_manager_arc.load_full();
+                let config_manager_arc = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
+                let config_manager = config_manager_arc.load_full();
 
-                    // Save config to Config file on app exit
-                    config_manager.save_config();
-                }
-                _ => (),
+                // Save config to Config file on app exit
+                config_manager.save_config();
             }
         });
 }

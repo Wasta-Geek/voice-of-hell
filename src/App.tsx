@@ -12,6 +12,9 @@ import AppTabs from "@/AppTabs";
 
 const queryClient = new QueryClient();
 
+/**
+ * Main app component
+ */
 function App() {
   return (
     <StrictMode>

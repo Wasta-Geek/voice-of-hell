@@ -5,10 +5,11 @@ use tauri::{AppHandle, State};
 use crate::{
     audio::device_manager::DeviceManager,
     emitter::emit_event,
-    models::app_config::{AppConfig, RuntimeConfig, StoredConfig},
+    models::app_config::{AppConfig, StoredConfig},
     profile::config_manager::ConfigManager,
 };
 
+/// [Tauri command] called by front when app has loaded (synchronization method)
 #[tauri::command]
 pub fn app_ready(app: AppHandle, state: State<'_, Mutex<DeviceManager>>) -> Result<(), ()> {
     // Lock mutex for mutable state
@@ -29,6 +30,7 @@ pub fn app_ready(app: AppHandle, state: State<'_, Mutex<DeviceManager>>) -> Resu
     Ok(())
 }
 
+/// [Tauri command] Use a given audio input device
 #[tauri::command]
 pub fn input_device_selected(
     state: State<'_, Mutex<DeviceManager>>,
@@ -40,6 +42,7 @@ pub fn input_device_selected(
     Ok(())
 }
 
+/// [Tauri command] Use a given audio output device
 #[tauri::command]
 pub fn output_device_selected(
     state: State<'_, Mutex<DeviceManager>>,
@@ -51,6 +54,7 @@ pub fn output_device_selected(
     Ok(())
 }
 
+/// [Tauri command] Retrieves app config
 #[tauri::command]
 pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<StoredConfig, ()> {
     let config_manager = state.load();
@@ -59,6 +63,7 @@ pub fn get_config(state: State<'_, Arc<ArcSwap<ConfigManager>>>) -> Result<Store
     Ok(config.stored)
 }
 
+/// [Tauri command] Save app config
 #[tauri::command]
 pub fn save_config(
     state: State<'_, Arc<ArcSwap<ConfigManager>>>,
@@ -77,6 +82,7 @@ pub fn save_config(
     Ok(config.stored)
 }
 
+/// [Tauri command] (Un)Set if user if registering a Keybind
 #[tauri::command]
 pub fn set_keybind_listening_state(
     state: State<'_, Arc<ArcSwap<ConfigManager>>>,

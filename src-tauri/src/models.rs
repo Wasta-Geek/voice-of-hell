@@ -1,9 +1,14 @@
+/// Module: app config
 pub mod app_config;
-/// Module that manages common models (js / rust)
+/// Module: common models (js / rust)
 pub mod common;
+/// Module: Keybind effects
 pub mod keybind_effect;
+/// Module: keyboard state
 pub mod keyboard_state;
+/// Module: keycode
 pub mod keycode;
+/// Module: profile
 pub mod profile;
-pub mod shared_state;
+/// Module: available sound effects
 pub mod sound_effects;
