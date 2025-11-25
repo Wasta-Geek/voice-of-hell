@@ -1,6 +1,7 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from 'vite-tsconfig-paths'
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -28,10 +29,10 @@ export default defineConfig({
     host: host || false,
     hmr: host
       ? {
-        protocol: "ws",
-        host,
-        port: 1421,
-      }
+          protocol: "ws",
+          host,
+          port: 1421,
+        }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
@@ -39,12 +40,15 @@ export default defineConfig({
     },
   },
   // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
-  envPrefix: ['VITE_', 'TAURI_ENV_*'],
+  envPrefix: ["VITE_", "TAURI_ENV_*"],
   build: {
     // Tauri uses Chromium on Windows and WebKit on macOS and Linux
-    target: envPlatform == 'windows' ? 'chrome105' : 'safari13',
-    minify: debugMode ? 'esbuild' : false,
-        // produce sourcemaps for debug builds
+    target: envPlatform == "windows" ? "chrome105" : "safari13",
+    minify: debugMode ? "esbuild" : false,
+    // produce sourcemaps for debug builds
     sourcemap: !!debugMode,
-  }
+  },
+  test: {
+    passWithNoTests: true,
+  },
 });

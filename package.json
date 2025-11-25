@@ -11,10 +11,13 @@
     "release": "cargo tauri build --bundles msi",
     "format": "pnpm run format_js && pnpm run format_rust",
     "format_js": "pnpm dlx prettier --write src/**/*.tsx",
-    "format_rust": "cargo fmt --manifest-path=src-tauri/Cargo.toml",
+    "format_rust": "cargo fmt --check --manifest-path=src-tauri/Cargo.toml",
     "lint": "pnpm run lint_js && pnpm run lint_rust",
     "lint_js": "pnpm dlx eslint --quiet",
-    "lint_rust": "cargo clippy --manifest-path=src-tauri/Cargo.toml"
+    "lint_rust": "cargo clippy --manifest-path=src-tauri/Cargo.toml",
+    "test": "pnpm run test_js && pnpm run test_rust",
+    "test_js": "vitest run",
+    "test_rust": "cargo test --manifest-path=src-tauri/Cargo.toml"
   },
   "dependencies": {
     "@mantine/core": "^8.2.1",
@@ -29,6 +32,8 @@
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@tauri-apps/cli": "^2.0.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.2.1",
@@ -42,7 +47,8 @@
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.47.0",
     "vite": "^5.3.1",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.13"
   },
   "prettier": {
     "endOfLine": "lf"
@@ -59,7 +65,7 @@
     ],
     "src-tauri/**/.rs": [
       "pnpm run lint_rust",
-      "rustfmt --check --manifest-path=src-tauri/Cargo.toml"
+      "cargo fmt --check --manifest-path=src-tauri/Cargo.toml"
     ]
   }
 }
