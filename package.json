@@ -11,7 +11,7 @@
     "release": "cargo tauri build --bundles msi",
     "format": "pnpm run format_js && pnpm run format_rust",
     "format_js": "pnpm dlx prettier --write src/**/*.tsx",
-    "format_rust": "cargo fmt --manifest-path=src-tauri/Cargo.toml",
+    "format_rust": "cargo fmt --check --manifest-path=src-tauri/Cargo.toml",
     "lint": "pnpm run lint_js && pnpm run lint_rust",
     "lint_js": "pnpm dlx eslint --quiet",
     "lint_rust": "cargo clippy --manifest-path=src-tauri/Cargo.toml",
@@ -65,7 +65,7 @@
     ],
     "src-tauri/**/.rs": [
       "pnpm run lint_rust",
-      "rustfmt --check --manifest-path=src-tauri/Cargo.toml"
+      "cargo fmt --check --manifest-path=src-tauri/Cargo.toml"
     ]
   }
 }
