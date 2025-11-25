@@ -1,7 +1,10 @@
 name: Testing backend
 on:
+  pull_request:
+    paths: src-tauri
   push:
     paths: src-tauri
+  workflow_dispatch:
 
 jobs:
   format:
