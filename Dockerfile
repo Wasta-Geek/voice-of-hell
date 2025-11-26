@@ -18,6 +18,11 @@ USER ${SERVICE_NAME}
 ENV HOME=/home/${SERVICE_NAME}
 WORKDIR $HOME
 
+## Setup non-root user for gh checkout action
+## https://github.com/actions/checkout/issues/1014#issuecomment-2899102017
+RUN groupadd -g 1001 $USERNAME && \
+    useradd -m -u 1001 -g $USERNAME -s /bin/bash $USERNAME
+
 ## Node / Nvm variables
 ENV NODE_VERSION=24
 ENV NVM_DIR=$HOME/.nvm
