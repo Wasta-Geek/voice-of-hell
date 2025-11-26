@@ -1,8 +1,6 @@
 name: build_docker_image
 on:
-  push:
-    paths:
-      - "Dockerfile"
+  workflow_dispatch:
 
 env:
   IMAGE_BASE_NAME: voice_of_hell
