@@ -9,26 +9,25 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt
       - name: Run cargo
         run: cargo fmt --check --manifest-path=src-tauri/Cargo.toml
 
   pre_test_build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - name: install dependencies (ubuntu only)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libpango1.0-dev libgtk-3-dev
       - name: Run cargo
         uses: actions-rs/cargo@v1
         with:
@@ -47,12 +46,13 @@ jobs:
   linting:
     needs: pre_test_build
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy
       - name: Restore cache
         uses: actions/cache/restore@v4
         with:
@@ -70,11 +70,13 @@ jobs:
   testing:
     needs: pre_test_build
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - name: Run test
         uses: actions-rs/cargo@v1
         with:
