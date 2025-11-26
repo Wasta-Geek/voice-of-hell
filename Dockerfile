@@ -12,16 +12,13 @@ RUN apt update && \
 ## Install latest Rust toolchain
 RUN rustup toolchain install stable --component rustfmt,clippy
 
-## Add && Change user
-RUN useradd -ms /bin/bash ${SERVICE_NAME}
+## Add && setup user
+## Note: https://github.com/actions/checkout/issues/1014#issuecomment-2899102017
+RUN groupadd -g 1001 ${SERVICE_NAME} && useradd -u 1001 -g ${SERVICE_NAME} -ms /bin/bash ${SERVICE_NAME}
+
 USER ${SERVICE_NAME}
 ENV HOME=/home/${SERVICE_NAME}
 WORKDIR $HOME
-
-## Setup non-root user for gh checkout action
-## https://github.com/actions/checkout/issues/1014#issuecomment-2899102017
-RUN groupadd -g 1001 $USERNAME && \
-    useradd -m -u 1001 -g $USERNAME -s /bin/bash $USERNAME
 
 ## Node / Nvm variables
 ENV NODE_VERSION=24
