@@ -4,8 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "app": "cargo tauri dev",
-    "dev": "vite dev",
+    "dev": "cargo tauri dev",
     "build": "vite build",
     "preview": "vite preview",
     "release": "cargo tauri build --bundles msi",
