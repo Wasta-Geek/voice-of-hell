@@ -15,12 +15,12 @@ RUN rustup toolchain install stable --component rustfmt,clippy
 ## Add && Change user
 RUN useradd -ms /bin/bash ${SERVICE_NAME}
 USER ${SERVICE_NAME}
-ENV HOME /home/${SERVICE_NAME}
+ENV HOME=/home/${SERVICE_NAME}
 WORKDIR $HOME
 
 ## Node / Nvm variables
-ENV NODE_VERSION 24
-ENV NVM_DIR $HOME/.nvm
+ENV NODE_VERSION=24
+ENV NVM_DIR=$HOME/.nvm
 
 ## Install pnpm
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
