@@ -22,10 +22,12 @@ WORKDIR $HOME
 
 ## Node / Nvm variables
 ENV NODE_VERSION=24
-ENV NVM_DIR=$HOME/.nvm
 
 ## Install pnpm
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
+
+# set env
+ENV NVM_DIR=/home/voice-of-hell/.nvm
 
 # Download and install nvm + node
 RUN bash -c " \
