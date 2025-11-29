@@ -41,6 +41,6 @@ ENV PNPM_HOME=/home/voice-of-hell/.local/share/pnpm
 ENV PATH="$PNPM_HOME:$PATH"
 
 ## Add node path to $PATH (make available for all user)
-ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
+ENV PATH="$NVM_DIR/versions/node/$(ls $NVM_DIR/versions/node)/bin:$PATH"
 
 ENTRYPOINT [ "/bin/bash" ]
