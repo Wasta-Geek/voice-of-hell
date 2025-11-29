@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: node_modules
-          key: node_modules-${{ hashFiles('package.json') }}
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
   linting:
     needs: pre_test_build
@@ -39,7 +39,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: node_modules-${{ hashFiles('package.json') }}
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Linting
         run: pnpm lint_js
 
@@ -57,6 +57,6 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: node_modules-${{ hashFiles('package.json') }}
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Testing
         run: pnpm test_js

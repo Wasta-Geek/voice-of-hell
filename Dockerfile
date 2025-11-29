@@ -22,7 +22,7 @@ WORKDIR $HOME
 
 ## Node / Nvm variables
 ENV NODE_VERSION=24
-ENV NVM_DIR=$HOME/.nvm
+ENV NVM_DIR=$HOME/voice-of-hell/.nvm
 
 ## Install pnpm
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
@@ -34,8 +34,11 @@ RUN bash -c " \
     nvm install $NODE_VERSION && \
     nvm alias default $NODE_VERSION"
 
-## Pnpm variable (make available for all user)
+## Add pnpm path to $PATH (make available for all user)
 ENV PNPM_HOME=/home/voice-of-hell/.local/share/pnpm
-ENV PATH=$PNPM_HOME:$PATH
+ENV PATH="$PNPM_HOME:$PATH"
+
+## Add node path to $PATH (make available for all user)
+ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
 
 ENTRYPOINT [ "/bin/bash" ]
