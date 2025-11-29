@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  linting:
+  pre_test_build:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/wasta-geek/voice_of_hell:latest
@@ -16,10 +16,35 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Test
+      - name: Install dependencies
+        run: pnpm install
+      - name: Cache cargo registry + build
+        id: cache-cargo-save
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('package.json') }}
+
+  linting:
+    needs: pre_test_build
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('package.json') }}
+      - name: Linting
         run: pnpm lint_js
 
   testing:
+    needs: pre_test_build
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/wasta-geek/voice_of_hell:latest
@@ -28,5 +53,10 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Test
-        run: pnpm lint_js
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('package.json') }}
+      - name: Testing
+        run: pnpm test_js
