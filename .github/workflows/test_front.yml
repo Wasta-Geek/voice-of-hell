@@ -17,9 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: |
-          source /home/voice-of-hell/.bashrc
-          pnpm install
+        run: source /home/voice-of-hell/.bashrc && pnpm install
         shell: bash
       - name: Cache cargo registry + build
         id: cache-cargo-save
