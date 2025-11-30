@@ -7,7 +7,7 @@ license-file = "LICENSE"
 description = "A soundboard to creates chaos."
 repository = "https://github.com/Wasta-Geek/voice-of-hell.git"
 authors = ["Corentin Ducatez <wasta.geek@gmail.com>"]
-rust-version = "1.91.1"
+rust-version = "1.91"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
