@@ -60,7 +60,7 @@
   "lint-staged": {
     "src/**/*.{js, jsx,ts,tsx}": [
       "npm run lint_js",
-      "npm dlx prettier --write --ignore-unknown"
+      "npx prettier --write --ignore-unknown"
     ],
     "src-tauri/**/.rs": [
       "npm run lint_rust",
