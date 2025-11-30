@@ -17,7 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: source /home/voice-of-hell/.bashrc && pnpm install
+        run: |
+          source /home/voice-of-hell/.bashrc
+          nvm use default
+          pnpm install
         shell: bash -leo pipefail {0}
       - name: Cache cargo registry + build
         id: cache-cargo-save
@@ -44,6 +47,7 @@ jobs:
       - name: Linting
         run: |
           source /home/voice-of-hell/.bashrc
+          nvm use default
           pnpm lint_js
         shell: bash -leo pipefail {0}
 
@@ -65,5 +69,6 @@ jobs:
       - name: Testing
         run: |
           source /home/voice-of-hell/.bashrc
+          nvm use default
           pnpm test_js
         shell: bash -leo pipefail {0}
