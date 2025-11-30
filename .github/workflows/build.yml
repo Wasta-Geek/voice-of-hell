@@ -34,4 +34,3 @@ jobs:
           tagName: v__VERSION__
           releaseName: "App v__VERSION__"
           args: ${{ matrix.args }}
-          projectPath: src-tauri
