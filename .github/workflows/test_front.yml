@@ -43,7 +43,7 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Linting
-        run: npm lint_js
+        run: npm run lint_js
 
   testing:
     needs: pre_test_build
@@ -62,4 +62,4 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Testing
-        run: npm test_js
+        run: npm run test_js
