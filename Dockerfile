@@ -36,8 +36,4 @@ RUN bash -c " \
     nvm install $NODE_VERSION && \
     nvm alias default $NODE_VERSION"
 
-## Add pnpm path to $PATH (make available for all user)
-ENV PNPM_HOME=/home/voice-of-hell/.local/share/pnpm
-ENV PATH="$PNPM_HOME:$PATH"
-
 ENTRYPOINT [ "/bin/bash" ]
