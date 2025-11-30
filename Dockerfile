@@ -12,15 +12,10 @@ RUN apt update && \
 ## Install latest Rust toolchain
 RUN rustup toolchain install stable --component rustfmt,clippy
 
-## Install pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
-
 # Download and install n + node
 ENV NODE_VERSION=24
 RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install lts && \
-    pnpm install -g n && \
+    npm install -g n && \
     n install $NODE_VERSION
 
 ## Add && setup user

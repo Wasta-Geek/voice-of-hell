@@ -18,10 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: |
-          source /home/voice-of-hell/.bashrc
-          pnpm install
-        shell: bash -leo pipefail {0}
+        run: npm install
       - name: Cache cargo registry + build
         id: cache-cargo-save
         uses: actions/cache/save@v4
@@ -46,8 +43,7 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Linting
-        run: pnpm lint_js
-        shell: bash -leo pipefail {0}
+        run: npm lint_js
 
   testing:
     needs: pre_test_build
@@ -66,7 +62,4 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Testing
-        run: |
-          source /home/voice-of-hell/.bashrc
-          pnpm test_js
-        shell: bash -leo pipefail {0}
+        run: npm test_js
