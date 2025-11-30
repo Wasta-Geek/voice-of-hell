@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -34,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -56,6 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
