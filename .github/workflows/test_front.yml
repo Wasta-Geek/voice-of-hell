@@ -20,7 +20,6 @@ jobs:
       - name: Install dependencies
         run: |
           source /home/voice-of-hell/.bashrc
-          nvm use default
           pnpm install
         shell: bash -leo pipefail {0}
       - name: Cache cargo registry + build
@@ -47,10 +46,7 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Linting
-        run: |
-          source /home/voice-of-hell/.bashrc
-          nvm use default
-          pnpm lint_js
+        run: pnpm lint_js
         shell: bash -leo pipefail {0}
 
   testing:
@@ -72,6 +68,5 @@ jobs:
       - name: Testing
         run: |
           source /home/voice-of-hell/.bashrc
-          nvm use default
           pnpm test_js
         shell: bash -leo pipefail {0}
