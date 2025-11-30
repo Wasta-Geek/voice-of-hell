@@ -27,7 +27,7 @@ ENV NODE_VERSION=24
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
 
 # set env
-ENV NVM_DIR=/home/voice-of-hell/.nvm
+ENV NVM_DIR=$HOME/.nvm
 
 # Download and install nvm + node
 RUN bash -c " \
@@ -39,8 +39,5 @@ RUN bash -c " \
 ## Add pnpm path to $PATH (make available for all user)
 ENV PNPM_HOME=/home/voice-of-hell/.local/share/pnpm
 ENV PATH="$PNPM_HOME:$PATH"
-
-## Add node path to $PATH (make available for all user)
-ENV PATH="$NVM_DIR/versions/node/$(ls $NVM_DIR/versions/node)/bin:$PATH"
 
 ENTRYPOINT [ "/bin/bash" ]

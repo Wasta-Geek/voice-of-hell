@@ -41,7 +41,9 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Linting
-        run: pnpm lint_js
+        run: |
+          source /home/voice-of-hell/.nvm/nvm.sh
+          pnpm lint_js
 
   testing:
     needs: pre_test_build
@@ -59,4 +61,4 @@ jobs:
           path: node_modules
           key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Testing
-        run: pnpm test_js
+        run: source /home/voice-of-hell/.nvm/nvm.sh && pnpm test_js
