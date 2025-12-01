@@ -15,7 +15,7 @@
       }
     ],
     "trayIcon": {
-      "iconPath": "../src/icons/tray-icon.png",
+      "iconPath": "icons/icon.png",
       "title": "Voice of Hell"
     },
     "security": {
@@ -23,9 +23,9 @@
     }
   },
   "build": {
-    "beforeDevCommand": "pnpm dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:8000",
-    "beforeBuildCommand": "pnpm build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../src/dist"
   },
   "bundle": {
@@ -34,12 +34,18 @@
     "copyright": "",
     "targets": "all",
     "externalBin": [],
-    "icon": ["../src/icons/icon.icns", "../src/icons/icon.ico"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
       "timestampUrl": ""
     },
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
     "longDescription": "",
     "macOS": {
       "entitlements": null,

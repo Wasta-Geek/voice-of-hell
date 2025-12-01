@@ -1,0 +1,50 @@
+name: Build app executable
+on:
+  push:
+    tags:
+      - v*
+jobs:
+  build_executable:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: ""
+          - os: ubuntu-latest
+            args: ""
+          ## There is some issues for CPAL on macos; fixes have been made but are unreleased for now
+          # ## for Arm based macs (M1 and above).
+          # - os: "macos-latest"
+          #   args: "--target aarch64-apple-darwin"
+          # ## for Intel based macs.
+          # - os: "macos-latest"
+          #   args: "--target x86_64-apple-darwin"
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: Install frontend dependencies
+        run: pnpm install
+      - name: Install dependencies (ubuntu only)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libasound2-dev libpango1.0-dev libgtk-3-dev libglib2.0-dev libayatana-appindicator3-dev librsvg2-dev
+      - name: Install Rust stable
+        if: matrix.os == 'macos-latest'
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: "aarch64-apple-darwin,x86_64-apple-darwin"
+          rust-src-dir: "src-tauri"
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "App v__VERSION__"
+          args: ${{ matrix.args }}

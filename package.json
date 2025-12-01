@@ -4,18 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "app": "cargo tauri dev",
-    "dev": "vite dev",
+    "dev": "cargo tauri dev",
     "build": "vite build",
     "preview": "vite preview",
     "release": "cargo tauri build --bundles msi",
-    "format": "pnpm run format_js && pnpm run format_rust",
-    "format_js": "pnpm dlx prettier --write src/**/*.tsx",
+    "format": "npm run format_js && npm run format_rust",
+    "format_js": "npx prettier --write src/**/*.tsx",
     "format_rust": "cargo fmt --check --manifest-path=src-tauri/Cargo.toml",
-    "lint": "pnpm run lint_js && pnpm run lint_rust",
-    "lint_js": "pnpm dlx eslint --quiet",
+    "lint": "npm run lint_js && npm run lint_rust",
+    "lint_js": "npx eslint --quiet",
     "lint_rust": "cargo clippy --manifest-path=src-tauri/Cargo.toml",
-    "test": "pnpm run test_js && pnpm run test_rust",
+    "test": "npm run test_js && npm run test_rust",
     "test_js": "vitest run",
     "test_rust": "cargo test --manifest-path=src-tauri/Cargo.toml"
   },
@@ -24,14 +23,14 @@
     "@mantine/hooks": "^8.2.1",
     "@tabler/icons-react": "^3.34.1",
     "@tanstack/react-query": "^5.90.2",
-    "@tauri-apps/api": "^2.0.3",
+    "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-shell": "^2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@tauri-apps/cli": "^2.0.0",
+    "@tauri-apps/cli": "^2.9.5",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.2.15",
@@ -60,11 +59,11 @@
   },
   "lint-staged": {
     "src/**/*.{js, jsx,ts,tsx}": [
-      "pnpm run lint_js",
-      "pnpm dlx prettier --write --ignore-unknown"
+      "npm run lint_js",
+      "npx prettier --write --ignore-unknown"
     ],
     "src-tauri/**/.rs": [
-      "pnpm run lint_rust",
+      "npm run lint_rust",
       "cargo fmt --check --manifest-path=src-tauri/Cargo.toml"
     ]
   }

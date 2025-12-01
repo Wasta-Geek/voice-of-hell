@@ -6,7 +6,7 @@ import { MantineProvider, AppShell } from "@mantine/core";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { StrictMode } from "react";
 
-import { theme } from "@/theme";
+import { theme } from "@/Theme";
 import Header from "@/Header";
 import AppTabs from "@/AppTabs";
 

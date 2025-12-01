@@ -12,24 +12,18 @@ RUN apt update && \
 ## Install latest Rust toolchain
 RUN rustup toolchain install stable --component rustfmt,clippy
 
-## Add && Change user
-RUN useradd -ms /bin/bash ${SERVICE_NAME}
+# Download and install n + node
+ENV NODE_VERSION=24
+RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install lts && \
+    npm install -g n && \
+    n install $NODE_VERSION
+
+## Add && setup user
+## Note: https://github.com/actions/checkout/issues/1014#issuecomment-2899102017
+RUN groupadd -g 1001 ${SERVICE_NAME} && useradd -u 1001 -g ${SERVICE_NAME} -ms /bin/bash ${SERVICE_NAME}
+
 USER ${SERVICE_NAME}
-ENV HOME /home/${SERVICE_NAME}
+ENV HOME=/home/${SERVICE_NAME}
 WORKDIR $HOME
-
-## Node / Nvm variables
-ENV NODE_VERSION 24
-ENV NVM_DIR $HOME/.nvm
-
-## Install pnpm
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
-
-# Download and install nvm + node
-RUN bash -c " \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
-    source $NVM_DIR/nvm.sh && \
-    nvm install $NODE_VERSION && \
-    nvm alias default $NODE_VERSION"
 
 ENTRYPOINT [ "/bin/bash" ]

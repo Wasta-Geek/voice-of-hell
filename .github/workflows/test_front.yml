@@ -7,24 +7,59 @@ on:
   workflow_dispatch:
 
 jobs:
-  linting:
+  pre_test_build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Install dependencies
+        run: npm install
+      - name: Cache cargo registry + build
+        id: cache-cargo-save
+        uses: actions/cache/save@v4
         with:
-          version: 10
-          run_install: true
-      - name: Test
-        run: pnpm lint_js
+          path: node_modules
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+  linting:
+    needs: pre_test_build
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - name: Linting
+        run: npm run lint_js
 
   testing:
+    needs: pre_test_build
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/wasta-geek/voice_of_hell:latest
+      options: --user voice-of-hell
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
         with:
-          version: 10
-          run_install: true
-      - name: Test
-        run: pnpm test_js
+          path: node_modules
+          key: node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - name: Testing
+        run: npm run test_js
