@@ -14,10 +14,10 @@ jobs:
           - os: ubuntu-latest
             args: ""
           ## for Arm based macs (M1 and above).
-          - platform: "macos-latest"
+          - os: "macos-latest"
             args: "--target aarch64-apple-darwin"
           ## for Intel based macs.
-          - platform: "macos-latest"
+          - os: "macos-latest"
             args: "--target x86_64-apple-darwin"
     runs-on: ${{ matrix.os }}
     permissions:
