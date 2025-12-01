@@ -34,7 +34,6 @@
     "copyright": "",
     "targets": "all",
     "externalBin": [],
-    "icon": ["../src/icons/icon.icns", "../src/icons/icon.ico"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
