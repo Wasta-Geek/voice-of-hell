@@ -6,15 +6,22 @@ on:
 jobs:
   build_executable:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
             args: ""
           - os: ubuntu-latest
             args: ""
-          - os: macos-latest
-            args: ""
+          ## for Arm based macs (M1 and above).
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin"
+          ## for Intel based macs.
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin"
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
