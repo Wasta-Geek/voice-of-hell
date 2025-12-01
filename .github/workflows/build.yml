@@ -13,12 +13,13 @@ jobs:
             args: ""
           - os: ubuntu-latest
             args: ""
-          ## for Arm based macs (M1 and above).
-          - os: "macos-latest"
-            args: "--target aarch64-apple-darwin"
-          ## for Intel based macs.
-          - os: "macos-latest"
-            args: "--target x86_64-apple-darwin"
+          ## There is some issues for CPAL on macos; fixes have been made but are unreleased for now
+          # ## for Arm based macs (M1 and above).
+          # - os: "macos-latest"
+          #   args: "--target aarch64-apple-darwin"
+          # ## for Intel based macs.
+          # - os: "macos-latest"
+          #   args: "--target x86_64-apple-darwin"
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
