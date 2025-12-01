@@ -39,6 +39,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           target: "aarch64-apple-darwin,x86_64-apple-darwin"
+          rust-src-dir: "src-tauri"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
