@@ -23,7 +23,7 @@
     }
   },
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "npm run pre_dev",
     "devUrl": "http://localhost:8000",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../src/dist"

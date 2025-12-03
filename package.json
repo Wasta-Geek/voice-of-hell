@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "cargo tauri dev",
+    "pre_dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "release": "cargo tauri build --bundles msi",
