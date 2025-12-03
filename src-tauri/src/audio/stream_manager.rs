@@ -1,15 +1,13 @@
+use anyhow::{Context, Result};
 use cpal::{
     Device, Stream, StreamConfig,
     traits::{DeviceTrait, StreamTrait},
 };
 use ringbuf::{HeapRb, traits::Split};
 
-use crate::{
-    audio::{
-        sound_manager::SoundManager,
-        stream_callback::{input_callback, output_callback, stream_error_callback},
-    },
-    error::MyError,
+use crate::audio::{
+    sound_manager::SoundManager,
+    stream_callback::{input_callback, output_callback, stream_error_callback},
 };
 
 /// Audio stream manager
@@ -38,7 +36,7 @@ impl StreamManager {
         input_device: &Device,
         output_device: &Device,
         config: &StreamConfig,
-    ) -> Result<(), MyError> {
+    ) -> Result<()> {
         // Clear previous streams (if any already opened)
         self.clear_streams();
 
@@ -53,7 +51,9 @@ impl StreamManager {
             None,
         ) {
             Ok(stream) => {
-                stream.play().map_err(|_| MyError {})?;
+                stream
+                    .play()
+                    .with_context(|| "Cpal error occured while starting input stream")?;
                 self.input_stream = Some(stream)
             }
             Err(error) => log::error!("Couldn't open input stream, reason: {}", error),
@@ -69,7 +69,9 @@ impl StreamManager {
             None,
         ) {
             Ok(stream) => {
-                stream.play().map_err(|_| MyError {})?;
+                stream
+                    .play()
+                    .with_context(|| "Cpal error occured while starting output stream")?;
                 self.output_stream = Some(stream)
             }
             Err(error) => log::error!("Couldn't open output stream, reason: {}", error),

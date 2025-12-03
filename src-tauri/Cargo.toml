@@ -29,6 +29,8 @@ directories = "6.0.0"
 ts-rs = "10.1.0"
 chrono = { version = "0.4.42", features = [ "serde" ] }
 arc-swap = "1.7.1"
+hound = "3.5.1"
+anyhow = "1.0.100"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

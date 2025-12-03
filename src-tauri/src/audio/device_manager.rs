@@ -1,11 +1,11 @@
 use std::cmp;
 
+use anyhow::{Context, Result, anyhow};
 use cpal::traits::{DeviceTrait, HostTrait};
 use cpal::{Device, Host, SampleFormat, SampleRate, StreamConfig};
 
 use crate::audio::globals::{BUFFER_SIZE, PREFERRED_SAMPLE_RATE};
 use crate::audio::stream_manager::StreamManager;
-use crate::error::MyError;
 use crate::models::common::Device as CommonDevice;
 
 /// Manages audio devices
@@ -86,35 +86,41 @@ impl DeviceManager {
     }
 
     /// Set a target device as input
-    pub fn set_input_device(&mut self, target_device_name: &str) -> Result<(), MyError> {
+    pub fn set_input_device(&mut self, target_device_name: &str) -> Result<()> {
         let input_device = self
             .find_device_from_name(target_device_name, &self.internal_input_devices)
-            .map_err(|_| MyError {})?;
+            .with_context(|| "toto")?;
         self.input_device_selected = Some(input_device.clone());
 
         match self.input_device_selected.is_some() && self.output_device_selected.is_some() {
             true => self.start_streams(),
-            false => Err(MyError {}),
+            false => Ok(()),
         }
     }
 
     /// Set a target device as output
-    pub fn set_output_device(&mut self, target_device_name: &str) -> Result<(), MyError> {
+    pub fn set_output_device(&mut self, target_device_name: &str) -> Result<()> {
         let output_device = self
             .find_device_from_name(target_device_name, &self.internal_output_devices)
-            .map_err(|_| MyError {})?;
+            .with_context(|| "Cpal error occured while starting input stream")?;
         self.output_device_selected = Some(output_device.clone());
 
         match self.input_device_selected.is_some() && self.output_device_selected.is_some() {
             true => self.start_streams(),
-            false => Err(MyError {}),
+            false => Ok(()),
         }
     }
 
     /// Start input / output streams
-    fn start_streams(&mut self) -> Result<(), MyError> {
-        let input_device = self.input_device_selected.as_ref().ok_or(MyError {})?;
-        let output_device = self.output_device_selected.as_ref().ok_or(MyError {})?;
+    fn start_streams(&mut self) -> Result<()> {
+        let input_device = self
+            .input_device_selected
+            .as_ref()
+            .ok_or(anyhow!("No input stream currently used"))?;
+        let output_device = self
+            .output_device_selected
+            .as_ref()
+            .ok_or(anyhow!("No output stream currently used"))?;
 
         let sample_rate = self.find_compatible_sample_rate();
         let config = StreamConfig {
@@ -179,7 +185,7 @@ impl DeviceManager {
         &self,
         target_device_name: &str,
         device_list: &Vec<Device>,
-    ) -> Result<Device, ()> {
+    ) -> Result<Device> {
         for device in device_list {
             let device_name = device.name();
             if device_name.is_err() {
@@ -189,6 +195,6 @@ impl DeviceManager {
                 return Ok(device.clone());
             }
         }
-        Err(())
+        Err(anyhow!("No device found with name {}", target_device_name))
     }
 }

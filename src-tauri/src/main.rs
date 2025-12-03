@@ -9,8 +9,8 @@ pub(crate) mod audio;
 pub(crate) mod commands;
 /// Module: emit Tauri event
 pub(crate) mod emitter;
-/// Module: custom errors
-pub(crate) mod error;
+/// Module: file reader
+pub(crate) mod file;
 /// Module: keyboard management
 pub(crate) mod keyboard;
 /// Module: logging
