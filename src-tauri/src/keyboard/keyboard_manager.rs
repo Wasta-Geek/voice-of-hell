@@ -41,7 +41,7 @@ impl KeyboardManager {
     }
 
     /// Cleanup function that properly clean internal thread
-    pub fn exit_thread(&mut self) {
+    pub fn clear_before_exit(&mut self) {
         if let Some(thread_join_handle) = self.thread_handle.take() {
             self.thread_should_run.store(false, Ordering::Relaxed);
             let _ = thread_join_handle.join();

@@ -111,6 +111,11 @@ impl DeviceManager {
         }
     }
 
+    /// Clear internal resources
+    pub fn clear_before_exit(&mut self) {
+        self.stream_manager.clear_before_exit();
+    }
+
     /// Start input / output streams
     fn start_streams(&mut self) -> Result<()> {
         let input_device = self
@@ -127,7 +132,7 @@ impl DeviceManager {
             channels: 2,
             sample_rate: sample_rate,
             // Note: Fixed buffersize seems bugged and ignored on WAsio
-            buffer_size: cpal::BufferSize::Fixed(BUFFER_SIZE),
+            buffer_size: cpal::BufferSize::Fixed(BUFFER_SIZE.into()),
         };
 
         self.stream_manager

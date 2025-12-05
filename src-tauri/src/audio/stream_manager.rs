@@ -3,7 +3,6 @@ use cpal::{
     Device, Stream, StreamConfig,
     traits::{DeviceTrait, StreamTrait},
 };
-use ringbuf::{HeapRb, traits::Split};
 
 use crate::audio::{
     sound_manager::SoundManager,
@@ -17,7 +16,7 @@ pub struct StreamManager {
     /// Output stream, None if stream not currently opened
     output_stream: Option<Stream>,
     /// Manages sound (effects, volume, ...)
-    sound_manager: SoundManager,
+    sound_manager: Option<SoundManager>,
 }
 
 impl StreamManager {
@@ -26,7 +25,7 @@ impl StreamManager {
         Self {
             input_stream: Option::None,
             output_stream: Option::None,
-            sound_manager: SoundManager::new(),
+            sound_manager: None,
         }
     }
 
@@ -37,16 +36,20 @@ impl StreamManager {
         output_device: &Device,
         config: &StreamConfig,
     ) -> Result<()> {
-        // Clear previous streams (if any already opened)
-        self.clear_streams();
+        // Clear previous streams resources
+        self.clear_before_exit();
 
-        // Producer / Consumer
-        let (mut producer, mut consumer) = HeapRb::new(96000).split();
+        let mut sound_manager = SoundManager::new();
+
+        // Acquire input heap producer
+        let mut input_heap_producer = sound_manager.take_input_buffer_producer();
 
         // Create input stream
         match input_device.build_input_stream(
             config,
-            move |data: &[f32], callback_info| input_callback(data, callback_info, &mut producer),
+            move |data: &[f32], callback_info| {
+                input_callback(data, callback_info, &mut input_heap_producer)
+            },
             stream_error_callback,
             None,
         ) {
@@ -59,11 +62,14 @@ impl StreamManager {
             Err(error) => log::error!("Couldn't open input stream, reason: {}", error),
         }
 
+        // Acquire output heap consumer
+        let mut output_heap_consumer = sound_manager.take_output_buffer_consumer();
+
         // Create output stream
         match output_device.build_output_stream(
             config,
             move |data: &mut [f32], callback_info| {
-                output_callback(data, callback_info, &mut consumer)
+                output_callback(data, callback_info, &mut output_heap_consumer)
             },
             stream_error_callback,
             None,
@@ -76,16 +82,22 @@ impl StreamManager {
             }
             Err(error) => log::error!("Couldn't open output stream, reason: {}", error),
         }
+
+        self.sound_manager = Some(sound_manager);
         Ok(())
     }
 
     /// Properly clear input / output streams (if opened)
-    pub fn clear_streams(&mut self) {
+    pub fn clear_before_exit(&mut self) {
         if self.input_stream.take().is_some() {
             log::info!("Previous input stream cleared.");
         }
         if self.output_stream.take().is_some() {
             log::info!("Previous output stream cleared.");
+        }
+
+        if let Some(mut sound_manager) = self.sound_manager.take() {
+            sound_manager.exit_thread();
         }
     }
 }

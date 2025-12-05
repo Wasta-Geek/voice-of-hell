@@ -60,14 +60,19 @@ fn main() {
         .expect("error while running tauri application")
         .run(|app_handle, event| {
             if let tauri::RunEvent::ExitRequested { .. } = event {
+                // Clear keyboard manager internal thread
                 let keyboard_manager_mutex = app_handle.state::<Mutex<KeyboardManager>>();
                 let mut keyboard_manager = keyboard_manager_mutex.lock().unwrap();
-                keyboard_manager.exit_thread();
+                keyboard_manager.clear_before_exit();
 
-                let config_manager_arc = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
-                let config_manager = config_manager_arc.load_full();
+                // Clear keyboard manager internal thread
+                let device_manager_mutex = app_handle.state::<Mutex<DeviceManager>>();
+                let mut device_manager = device_manager_mutex.lock().unwrap();
+                device_manager.clear_before_exit();
 
                 // Save config to Config file on app exit
+                let config_manager_arc = app_handle.state::<Arc<ArcSwap<ConfigManager>>>();
+                let config_manager = config_manager_arc.load_full();
                 config_manager.save_config();
             }
         });

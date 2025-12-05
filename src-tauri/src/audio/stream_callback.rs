@@ -31,17 +31,9 @@ pub fn output_callback(
     channel_receiver: &mut HeapCons<f32>,
 ) {
     // Feed output buffer from last input buffer
-    let count_sample = channel_receiver.pop_slice(output_buffer);
-    // Missing sample
-    let missing_sample_size = output_buffer.len() - count_sample;
+    let sample_size = channel_receiver.pop_slice(output_buffer);
 
-    // Loop over remaining buffer values that should be set at 0.0
-    for buffer_value in output_buffer
-        .iter_mut()
-        .skip(count_sample)
-        .take(missing_sample_size)
-    {
-        // Add silence to missing frames in output buffer
-        *buffer_value = 0.0;
+    if sample_size < output_buffer.len() {
+        output_buffer[sample_size..].fill(0.0);
     }
 }
