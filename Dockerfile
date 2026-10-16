@@ -18,7 +18,7 @@ ENV NODE_VERSION=24
 RUN curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s install lts && \
     npm install -g n && \
     n install $NODE_VERSION && \
-    npm install -g pnpm
+    npm install -g pnpm@12.11.2
 
 ## Add && setup user
 ## Note: https://github.com/actions/checkout/issues/1014#issuecomment-2899102017

@@ -25,9 +25,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      # pnpm version is read from the packageManager field of package.json
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - name: Install frontend dependencies
         run: pnpm install
       - name: Install dependencies (ubuntu only)
