@@ -40,3 +40,27 @@ node_modules
 gen
 dist
 bindings
+
+### Node / frontend ###
+.pnpm-store/
+.vite/
+coverage/
+*.tsbuildinfo
+.eslintcache
+npm-debug.log*
+pnpm-debug.log*
+*.log
+
+### Environment / secrets ###
+.env
+.env.*
+!.env.example
+
+### OS ###
+.DS_Store
+Thumbs.db
+desktop.ini
+
+### Dev container ###
+# pnpm tool cache created in the workspace when HOME resolves here
+.local/

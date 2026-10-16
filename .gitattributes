@@ -1,0 +1,11 @@
+# Normalize line endings: store text files with LF in the repo and checkout
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.ico binary
+*.icns binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.flac binary
