@@ -26,7 +26,8 @@ jobs:
           echo "IMAGE_NAME=ghcr.io/$GITHUB_REPOSITORY_LOWERCASE/${{ env.IMAGE_BASE_NAME }}" >> $GITHUB_ENV
       - name: Build and push
         uses: docker/build-push-action@v3
-
         with:
+          # Lean image for CI: the dev stage (GUI / audio runtime) is only built locally
+          target: ci
           push: true
           tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}

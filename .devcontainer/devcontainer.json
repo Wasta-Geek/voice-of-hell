@@ -1,0 +1,96 @@
+{
+  "name": "voice-of-hell",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    // GUI / audio runtime packages on top of the CI image
+    "target": "dev"
+  },
+  "features": {
+    // Grants passwordless sudo to the existing "voice-of-hell" user
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "username": "voice-of-hell",
+      "installZsh": false,
+      "installOhMyZsh": false,
+      "upgradePackages": false
+    }
+  },
+  "remoteUser": "voice-of-hell",
+  // Allow the container to draw on the host X server (native Linux). `|| exit 0` keeps it valid
+  // and harmless in both sh and Windows cmd, where xhost doesn't exist
+  "initializeCommand": "xhost +local: || exit 0",
+  // GUI + audio passthrough. Defaults target WSLg (Windows 11 / WSL2 + Docker Desktop), whose paths
+  // are resolved inside the Docker Desktop VM (WSLg is exposed under /run/desktop/mnt/host/wslg).
+  // On a native Linux host, export before opening the container:
+  //   VOH_X11_SOCKET=/tmp/.X11-unix  VOH_PULSE_DIR=$XDG_RUNTIME_DIR/pulse
+  // Socket names are resolved at startup by link-host-sockets (see Dockerfile dev stage)
+  "mounts": [
+    // X11 socket directory
+    "source=${localEnv:VOH_X11_SOCKET:/run/desktop/mnt/host/wslg/.X11-unix},target=/run/host-x11,type=bind",
+    // PulseAudio server socket directory (speakers + microphone)
+    "source=${localEnv:VOH_PULSE_DIR:/run/desktop/mnt/host/wslg},target=/run/host-pulse,type=bind",
+    // Build caches: survive container rebuilds, and stay off the slow Windows bind mount
+    // cargo registry + git deps + `cargo install` binaries (CARGO_HOME)
+    "source=voh-cargo-home-${devcontainerId},target=/home/voice-of-hell/.cargo,type=volume",
+    // cargo build output (CARGO_TARGET_DIR)
+    "source=voh-cargo-target-${devcontainerId},target=/home/voice-of-hell/.cargo-target,type=volume",
+    // pnpm content store
+    "source=voh-pnpm-store-${devcontainerId},target=/home/voice-of-hell/.local/share/pnpm/store,type=volume",
+    // node_modules: Linux-only binaries anyway, and much faster than the Windows bind mount.
+    // Not visible from the host: run git commits (husky hooks) from inside the container
+    "source=voh-node-modules-${devcontainerId},target=${containerWorkspaceFolder}/node_modules,type=volume"
+  ],
+  "runArgs": [
+    // WebKitGTK uses shared memory heavily, the 64MB docker default is too small
+    "--shm-size=1g"
+  ],
+  "containerEnv": {
+    // Listen on all interfaces so the vite dev server is reachable through port forwarding
+    "TAURI_DEV_HOST": "0.0.0.0",
+    // Cargo caches and build output live in the volumes above. The rustup proxies
+    // (cargo, rustc...) stay in the image's /usr/local/cargo/bin, toolchains in RUSTUP_HOME
+    "CARGO_HOME": "/home/voice-of-hell/.cargo",
+    "CARGO_TARGET_DIR": "/home/voice-of-hell/.cargo-target"
+  },
+  "remoteEnv": {
+    // `cargo install` binaries (cargo-tauri) are in the CARGO_HOME volume
+    "PATH": "${containerEnv:PATH}:/home/voice-of-hell/.cargo/bin"
+  },
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "vite" }
+  },
+  // New volumes (and missing parent dirs) are created root-owned: hand them to the dev user.
+  // tauri-cli provides the `cargo tauri` subcommand used by `pnpm dev`, only built if not already cached
+  "postCreateCommand": "sudo chown voice-of-hell:voice-of-hell ~/.cargo ~/.cargo-target ~/.local ~/.local/share ~/.local/share/pnpm ~/.local/share/pnpm/store ${containerWorkspaceFolder}/node_modules && (command -v cargo-tauri >/dev/null || cargo install tauri-cli --version '^2' --locked) && pnpm install",
+  // The dev container replaces the image entrypoint: link the host X11 / PulseAudio sockets here
+  "postStartCommand": "link-host-sockets",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tauri-apps.tauri-vscode",
+        "vadimcn.vscode-lldb",
+        "tamasfe.even-better-toml",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "vitest.explorer",
+        "Anthropic.claude-code"
+      ],
+      "settings": {
+        "rust-analyzer.linkedProjects": ["src-tauri/Cargo.toml"],
+        "rust-analyzer.check.command": "clippy",
+        // Separate target subdir so rust-analyzer doesn't hold the build lock during `cargo tauri dev`
+        "rust-analyzer.cargo.targetDir": true,
+        "[rust]": {
+          "editor.defaultFormatter": "rust-lang.rust-analyzer",
+          "editor.formatOnSave": true
+        },
+        "[typescript][typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        }
+      }
+    }
+  }
+}

@@ -29,11 +29,52 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash 
 pnpm dev;
 ```
 
-### Docker (WIP)
+### Dev container (recommended)
+
+Open the repository in VS Code and run **Dev Containers: Reopen in Container**. The [dev container](.devcontainer/devcontainer.json) builds the [Dockerfile](Dockerfile), forwards the GUI and audio devices (speakers + microphone) from the host, caches cargo / pnpm builds in volumes and installs `tauri-cli` + node dependencies.
 
 ```bash
-## TODO: be able to expose audio devices to docker
-docker run -it -v "${PWD}:/home/voice-of-hell" ghcr.io/wasta-geek/voice_of_hell:latest
+## Then, inside the container
+pnpm dev;
+```
+
+It works out of the box with WSLg (Windows 11 / WSL2 + Docker Desktop). On a native Linux host, point the container to the host X11 / PulseAudio socket directories (e.g. in `~/.profile`, then restart VS Code):
+
+```bash
+export VOH_X11_SOCKET=/tmp/.X11-unix
+export VOH_PULSE_DIR="$XDG_RUNTIME_DIR/pulse"
+```
+
+Local X11 clients are allowed automatically (`xhost +local:` on container start) and the socket names (display number, PulseAudio socket) are detected inside the container.
+
+Notes:
+
+- `node_modules` lives in a container volume: run git commits (husky hooks) from inside the container.
+- First build takes a while (`cargo install tauri-cli` + full Rust build), next ones reuse the cached volumes.
+
+### Docker
+
+The Dockerfile has two targets: `ci` (build / test dependencies, published as `ghcr.io/wasta-geek/voice_of_hell` for the GitHub workflows) and `dev` (adds the GUI / audio runtime packages, used by the dev container).
+
+```bash
+## WSLg (from a WSL shell)
+docker build --target dev -t voice_of_hell:dev .
+docker run -it --shm-size=1g \
+  -v "${PWD}:/workspaces/voice-of-hell" -w /workspaces/voice-of-hell \
+  -v /mnt/wslg/.X11-unix:/run/host-x11 -v /mnt/wslg:/run/host-pulse \
+  voice_of_hell:dev
+
+## Native Linux
+## Build with your own uid / gid: files written in the mounted repo stay yours, and PulseAudio accepts the connection
+docker build --target dev --build-arg USER_UID="$(id -u)" --build-arg USER_GID="$(id -g)" -t voice_of_hell:dev .
+xhost +local:
+docker run -it --shm-size=1g \
+  -v "${PWD}:/workspaces/voice-of-hell" -w /workspaces/voice-of-hell \
+  -v /tmp/.X11-unix:/run/host-x11 -v "${XDG_RUNTIME_DIR}/pulse:/run/host-pulse" \
+  voice_of_hell:dev
+
+## Then, inside the container
+cargo install tauri-cli --version '^2' --locked && pnpm install && pnpm dev;
 ```
 
 ## Formatting
