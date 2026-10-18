@@ -10,5 +10,7 @@ pub mod keyboard_state;
 pub mod keycode;
 /// Module: profile
 pub mod profile;
+/// Module : Runtime audio effect
+pub mod runtime_audio_effect;
 /// Module: available sound effects
 pub mod sound_effects;

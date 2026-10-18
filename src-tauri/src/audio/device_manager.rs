@@ -7,6 +7,7 @@ use cpal::{Device, Host, SampleFormat, SampleRate, StreamConfig};
 use crate::audio::globals::{BUFFER_SIZE, PREFERRED_SAMPLE_RATE};
 use crate::audio::stream_manager::StreamManager;
 use crate::models::common::Device as CommonDevice;
+use crate::models::runtime_audio_effect::RuntimeAudioEffect;
 
 /// Manages audio devices
 pub struct DeviceManager {
@@ -109,6 +110,11 @@ impl DeviceManager {
             true => self.start_streams(),
             false => Ok(()),
         }
+    }
+
+    /// Queue an audio effect to be played on current streams
+    pub fn play_effect(&self, effect: Box<dyn RuntimeAudioEffect>) -> Result<()> {
+        self.stream_manager.play_effect(effect)
     }
 
     /// Clear internal resources

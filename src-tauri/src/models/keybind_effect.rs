@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 
 use crate::models::{keycode::LocalKeycode, sound_effects::SoundEffect};
@@ -6,7 +8,7 @@ use crate::models::{keycode::LocalKeycode, sound_effects::SoundEffect};
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct KeybindEffectItem {
     /// Associated key(s)
-    keycode_list: Vec<LocalKeycode>,
+    pub keycode_list: HashSet<LocalKeycode>,
     /// Associated sound effect
-    sound_effect: SoundEffect,
+    pub sound_effect: SoundEffect,
 }

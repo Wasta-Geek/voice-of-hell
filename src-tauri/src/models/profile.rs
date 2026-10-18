@@ -6,7 +6,7 @@ use crate::models::keybind_effect::KeybindEffectItem;
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Profile {
     /// Profile name
-    name: String,
+    pub name: String,
     /// Keybind(s) config
-    keybind_config: Vec<KeybindEffectItem>,
+    pub keybind_config: Vec<KeybindEffectItem>,
 }

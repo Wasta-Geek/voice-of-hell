@@ -1,9 +1,9 @@
 use arc_swap::ArcSwap;
-use device_query::{DeviceQuery, DeviceState, Keycode};
+use device_query::{DeviceQuery, DeviceState};
 use std::{
     collections::HashSet,
     sync::{
-        Arc,
+        Arc, Mutex,
         atomic::{AtomicBool, Ordering},
     },
     thread::{self, JoinHandle},
@@ -11,7 +11,12 @@ use std::{
 use tauri::{AppHandle, Emitter, Manager};
 
 use crate::{
-    models::{keyboard_state::KeyboardState, keycode::VecInto},
+    audio::device_manager::DeviceManager,
+    models::{
+        keyboard_state::KeyboardState,
+        keycode::{LocalKeycode, VecInto},
+        sound_effects::SoundEffect,
+    },
     profile::config_manager::ConfigManager,
 };
 
@@ -55,7 +60,8 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
     let mut previous_key_pressed_list = HashSet::new();
 
     while thread_should_run_bool.load(Ordering::Relaxed) {
-        let key_pressed_list: HashSet<Keycode> = device_state.get_keys().into_iter().collect();
+        let key_pressed_list: HashSet<LocalKeycode> =
+            device_state.get_keys().vec_into().into_iter().collect();
         let key_released_list: HashSet<_> = previous_key_pressed_list
             .difference(&key_pressed_list)
             .collect();
@@ -67,11 +73,31 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
         let config_manager = config_manager_state.load();
         let config = config_manager.get_config();
 
-        // // If at least one key released
-        // if key_released_list.len() > 0 {
-        //     log::warn!("Key released: {:?}", key_released_list);
-        //     // if let Some(last_profile_index_used) = config.stored.last_profile_index_used {}
-        // }
+        // If at least one key newly pressed (and user is not registering a keybind)
+        if !new_key_pressed_list.is_empty()
+            && !config.runtime.keybind_listening
+            && config.stored.last_profile_index_used.is_some()
+        {
+            log::debug!("Key pressed: {:?}", new_key_pressed_list);
+            let profile_index_used_str = config.stored.last_profile_index_used;
+            let profile_index_res = profile_index_used_str.unwrap().parse::<usize>();
+            if let Ok(profile_index) = profile_index_res {
+                let current_config = &config.stored.profiles[profile_index];
+                // Loop over each keybind
+                for keybind in &current_config.keybind_config {
+                    // Triggered if all its keys are pressed, at least one of them newly
+                    // (holding the keybind + pressing another key doesn't trigger it again)
+                    if keybind.keycode_list.is_subset(&key_pressed_list)
+                        && keybind
+                            .keycode_list
+                            .iter()
+                            .any(|keycode| new_key_pressed_list.contains(keycode))
+                    {
+                        trigger_sound_effect(&app_handle, &keybind.sound_effect);
+                    }
+                }
+            }
+        }
 
         if config.runtime.keybind_listening
             && (!new_key_pressed_list.is_empty() || !key_released_list.is_empty())
@@ -79,10 +105,10 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
             let emit_result = app_handle.emit(
                 "keyboard_state_changed",
                 KeyboardState {
-                    key_pressed_list: Vec::from_iter(key_pressed_list.clone().into_iter())
-                        .vec_into(),
-                    key_released_list: Vec::from_iter(key_released_list.clone().into_iter())
-                        .vec_into(),
+                    key_pressed_list: Vec::from_iter(key_pressed_list.clone()),
+                    key_released_list: Vec::from_iter(
+                        key_released_list.clone().into_iter().cloned(),
+                    ),
                 },
             );
             if let Err(error) = emit_result {
@@ -93,5 +119,23 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
             }
         }
         previous_key_pressed_list = key_pressed_list;
+    }
+}
+
+/// Send the given sound effect to be played on current audio streams
+fn trigger_sound_effect(app_handle: &AppHandle, sound_effect: &SoundEffect) {
+    // TODO Preload sound files on profile load instead of reading them on each key press
+    let play_result = sound_effect.make_runtime().and_then(|effect| {
+        let device_manager_state = app_handle.state::<Mutex<DeviceManager>>();
+        let device_manager = device_manager_state.lock().unwrap();
+        device_manager.play_effect(effect)
+    });
+
+    if let Err(error) = play_result {
+        log::error!(
+            "Couldn't play sound effect {:?}, error: {:#}",
+            sound_effect,
+            error
+        );
     }
 }

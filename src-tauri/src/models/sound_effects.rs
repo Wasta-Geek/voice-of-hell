@@ -1,6 +1,12 @@
+use anyhow::{Result, anyhow};
 use chrono::{DateTime, Utc, serde::ts_milliseconds_option};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+
+use crate::{
+    audio::effects::{do_nothing::AudioEffectDoNothing, play_sound::AudioEffectPlaySound},
+    models::runtime_audio_effect::RuntimeAudioEffect,
+};
 
 /// Represents a sound effect
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -31,4 +37,30 @@ pub enum SoundEffect {
     },
     /// Clear all current sound effects played
     ClearAllEffects,
+}
+
+impl SoundEffect {
+    /// Transform "config effect" into a RuntimeAudioEffect that's ready to be consumed
+    pub fn make_runtime(&self) -> Result<Box<dyn RuntimeAudioEffect>> {
+        let runtime_instance: Box<dyn RuntimeAudioEffect> = match &self {
+            SoundEffect::DoNothing => Box::new(AudioEffectDoNothing {}),
+            SoundEffect::PlaySound {
+                name,
+                last_modified: _,
+                path,
+            } => {
+                let unwrapped_path = path
+                    .clone()
+                    .ok_or_else(|| anyhow!("No file selected for sound effect {name}"))?;
+                Box::new(AudioEffectPlaySound::new(unwrapped_path)?)
+            }
+            // TODO Not implemented yet: returns an error instead of panicking the caller thread
+            SoundEffect::IncreaseVolume { .. }
+            | SoundEffect::DecreaseVolume { .. }
+            | SoundEffect::ClearAllEffects => {
+                return Err(anyhow!("Sound effect not implemented yet: {:?}", self));
+            }
+        };
+        Ok(runtime_instance)
+    }
 }

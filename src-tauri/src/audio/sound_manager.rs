@@ -1,24 +1,28 @@
 use std::{
-    collections::VecDeque,
     hint::spin_loop,
     sync::{
-        Arc, Mutex,
+        Arc,
         atomic::{AtomicBool, Ordering},
+        mpsc::{self, Receiver, Sender},
     },
     thread::{self, JoinHandle},
 };
 
+use anyhow::{Result, anyhow};
 use ringbuf::{
     HeapCons, HeapProd, HeapRb,
     traits::{Consumer, Producer, Split},
 };
 
-use crate::audio::globals::BUFFER_SIZE;
+use crate::{
+    audio::{effect_manager::EffectManager, globals::BUFFER_SIZE},
+    models::runtime_audio_effect::RuntimeAudioEffect,
+};
 
 /// Manages sound effects
 pub struct SoundManager {
-    /// Contains last input buffer content
-    input_buffer_queue: Arc<Mutex<VecDeque<Vec<f32>>>>,
+    /// Sends effects to be played to the internal thread
+    effect_sender: Sender<Box<dyn RuntimeAudioEffect>>,
     /// Optional input heap producer (exists until input stream is created and passed to its callback)
     input_heap_prod: Option<HeapProd<f32>>,
     /// Optional output heap consumer (exists until output stream is created and passed to its callback)
@@ -35,17 +39,23 @@ impl SoundManager {
     pub fn new() -> Self {
         let (input_prod, input_cons) = HeapRb::new(4096).split();
         let (output_prod, output_cons) = HeapRb::new(4096).split();
+        let (effect_sender, effect_receiver) = mpsc::channel();
 
         let thread_should_run = Arc::new(AtomicBool::new(true));
         let thread_should_run_cloned = thread_should_run.clone();
 
         // Launch thread and poll for key pressed
         let thread_handle = thread::spawn(move || {
-            audio_processing(thread_should_run_cloned, input_cons, output_prod)
+            audio_processing(
+                thread_should_run_cloned,
+                input_cons,
+                output_prod,
+                effect_receiver,
+            )
         });
 
         Self {
-            input_buffer_queue: Arc::new(Mutex::new(VecDeque::new())),
+            effect_sender: effect_sender,
             input_heap_prod: Some(input_prod),
             output_heap_cons: Some(output_cons),
             thread_handle: Some(thread_handle),
@@ -67,12 +77,11 @@ impl SoundManager {
             .expect("Output buffer heap consumer can only be fetched once")
     }
 
-    /// Add audio sample to input buffer
-    pub async fn feed_input_buffer(&mut self, buffer: Vec<f32>) {
-        // Lock mutex for mutable
-        let mut input_buffer_queue = self.input_buffer_queue.lock().unwrap();
-
-        input_buffer_queue.push_back(buffer);
+    /// Queue an audio effect to be played by the internal thread
+    pub fn play_effect(&self, effect: Box<dyn RuntimeAudioEffect>) -> Result<()> {
+        self.effect_sender
+            .send(effect)
+            .map_err(|_| anyhow!("Audio processing thread is not running"))
     }
 
     /// Cleanup function that properly clean internal thread
@@ -89,10 +98,17 @@ fn audio_processing(
     thread_should_run_bool: Arc<AtomicBool>,
     mut input_heap_consumer: HeapCons<f32>,
     mut output_heap_producer: HeapProd<f32>,
+    effect_receiver: Receiver<Box<dyn RuntimeAudioEffect>>,
 ) {
     let mut tmp_buffer = [0.0; BUFFER_SIZE as usize];
+    let mut effect_manager = EffectManager::new();
 
     while thread_should_run_bool.load(Ordering::Relaxed) {
+        // Queue newly requested effects (non-blocking)
+        for effect in effect_receiver.try_iter() {
+            effect_manager.add_audio_effect(effect);
+        }
+
         // Reset tmp_buffer value with silence
         tmp_buffer.fill(0.0);
 
@@ -100,6 +116,9 @@ fn audio_processing(
         let size = input_heap_consumer.pop_slice(&mut tmp_buffer);
 
         if size > 0 {
+            // Merge playing effects into input samples
+            effect_manager.consume_sample(&mut tmp_buffer);
+
             // Push samples for output device
             output_heap_producer.push_slice(&tmp_buffer);
         } else {

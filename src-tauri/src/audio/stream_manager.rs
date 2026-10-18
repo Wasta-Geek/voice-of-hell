@@ -1,12 +1,15 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use cpal::{
     Device, Stream, StreamConfig,
     traits::{DeviceTrait, StreamTrait},
 };
 
-use crate::audio::{
-    sound_manager::SoundManager,
-    stream_callback::{input_callback, output_callback, stream_error_callback},
+use crate::{
+    audio::{
+        sound_manager::SoundManager,
+        stream_callback::{input_callback, output_callback, stream_error_callback},
+    },
+    models::runtime_audio_effect::RuntimeAudioEffect,
 };
 
 /// Audio stream manager
@@ -85,6 +88,14 @@ impl StreamManager {
 
         self.sound_manager = Some(sound_manager);
         Ok(())
+    }
+
+    /// Queue an audio effect to be played on current streams
+    pub fn play_effect(&self, effect: Box<dyn RuntimeAudioEffect>) -> Result<()> {
+        self.sound_manager
+            .as_ref()
+            .ok_or(anyhow!("No audio stream running"))?
+            .play_effect(effect)
     }
 
     /// Properly clear input / output streams (if opened)

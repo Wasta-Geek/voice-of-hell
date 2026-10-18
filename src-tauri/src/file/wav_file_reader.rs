@@ -68,11 +68,11 @@ fn read_wav_reader_samples_as_f32_vec(
                 })
                 .collect(),
 
-            // Internet black magic
+            // [black magic] hound returns 24-bit samples as i32 within ±2^23: scale them to [-1.0, 1.0]
             24 => wav_reader
-                .samples::<i32>() // hound uses i32 for packed 24-bit
+                .samples::<i32>()
                 .map(|result| match result {
-                    Ok(sample) => Ok(Sample::to_sample::<f32>(sample >> 8)),
+                    Ok(sample) => Ok(sample as f32 / 8_388_608.0),
                     Err(err) => Err(anyhow!(
                         "Cannot retrieves file content with 24 bits per sample format, error: {}",
                         err
