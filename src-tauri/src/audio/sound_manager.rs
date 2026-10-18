@@ -11,7 +11,7 @@ use std::{
 use anyhow::{Result, anyhow};
 use ringbuf::{
     HeapCons, HeapProd, HeapRb,
-    traits::{Consumer, Producer, Split},
+    traits::{Consumer, Observer, Producer, Split},
 };
 
 use crate::{
@@ -93,7 +93,11 @@ impl SoundManager {
     }
 }
 
-/// Polling method that manages key pressed / released. This method is run by KeyboardManager internal thread.
+/// Audio processing loop (mic input + effects -> output). This method is run by SoundManager internal thread.
+///
+/// Mic samples are forwarded as soon as they're available. Without mic samples (no input device,
+/// input stream stopped...), silent blocks are generated when the output is about to run out so that
+/// effects still play.
 fn audio_processing(
     thread_should_run_bool: Arc<AtomicBool>,
     mut input_heap_consumer: HeapCons<f32>,
@@ -109,23 +113,36 @@ fn audio_processing(
             effect_manager.add_audio_effect(effect);
         }
 
-        // Reset tmp_buffer value with silence
-        tmp_buffer.fill(0.0);
-
         // Read available input samples
-        let size = input_heap_consumer.pop_slice(&mut tmp_buffer);
+        let input_size = input_heap_consumer.pop_slice(&mut tmp_buffer);
 
-        if size > 0 {
-            // Merge playing effects into input samples
-            effect_manager.consume_sample(&mut tmp_buffer);
-
-            // Push samples for output device
-            output_heap_producer.push_slice(&tmp_buffer);
+        let block_size = if input_size > 0 {
+            input_size
+        } else if output_heap_producer.occupied_len() < BUFFER_SIZE as usize {
+            // No input while output is about to run out: generate a silent block
+            tmp_buffer.fill(0.0);
+            tmp_buffer.len()
         } else {
             // CPU instruction to put in "energy mode for a short time"
             // No idea if it's really impactful as CPU consumption seems to stay the same
             // TODO Measure in release mode OR replace by condvar
             spin_loop();
+            continue;
+        };
+        let block = &mut tmp_buffer[..block_size];
+
+        // Merge playing effects into the block, then keep it within the valid sample range
+        effect_manager.consume_sample(block);
+        block
+            .iter_mut()
+            .for_each(|sample| *sample = sample.clamp(-1.0, 1.0));
+
+        // Only push the block if the output buffer has room for all of it, otherwise drop it entirely.
+        // Stereo samples are stored alternately (left, right, left, right...): pushing only part of
+        // the block could cut a left/right pair in half, and every following sample would then be
+        // played on the wrong side.
+        if output_heap_producer.vacant_len() >= block_size {
+            output_heap_producer.push_slice(block);
         }
     }
 }
