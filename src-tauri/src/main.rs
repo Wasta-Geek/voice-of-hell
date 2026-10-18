@@ -39,6 +39,8 @@ fn main() {
 
     // Create tauri app
     tauri::Builder::default()
+        // Native file picker (sound file selection)
+        .plugin(tauri_plugin_dialog::init())
         .setup(move |app| {
             let keyboard_manager = KeyboardManager::new(app.handle().clone());
 
