@@ -64,3 +64,5 @@ desktop.ini
 ### Dev container ###
 # pnpm tool cache created in the workspace when HOME resolves here
 .local/
+
+resources
