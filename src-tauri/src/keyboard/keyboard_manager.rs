@@ -1,3 +1,4 @@
+use anyhow::{Result, anyhow};
 use arc_swap::ArcSwap;
 use device_query::{DeviceQuery, DeviceState};
 use std::{
@@ -124,18 +125,28 @@ fn poll(thread_should_run_bool: Arc<AtomicBool>, app_handle: AppHandle) {
 
 /// Send the given sound effect to be played on current audio streams
 fn trigger_sound_effect(app_handle: &AppHandle, sound_effect: &SoundEffect) {
-    // TODO Preload sound files on profile load instead of reading them on each key press
-    let play_result = sound_effect.make_runtime().and_then(|effect| {
-        let device_manager_state = app_handle.state::<Mutex<DeviceManager>>();
-        let device_manager = device_manager_state.lock().unwrap();
-        device_manager.play_effect(effect)
-    });
-
-    if let Err(error) = play_result {
+    if let Err(error) = play_sound_effect(app_handle, sound_effect) {
         log::error!(
             "Couldn't play sound effect {:?}, error: {:#}",
             sound_effect,
             error
         );
     }
+}
+
+/// Prepare the given sound effect for current audio streams format, then queue it to be played
+fn play_sound_effect(app_handle: &AppHandle, sound_effect: &SoundEffect) -> Result<()> {
+    let device_manager_state = app_handle.state::<Mutex<DeviceManager>>();
+
+    let stream_config = device_manager_state
+        .lock()
+        .unwrap()
+        .get_stream_config()
+        .ok_or(anyhow!("No audio stream running"))?;
+
+    // Device manager is not locked meanwhile: file reading / conversion can take some time
+    // TODO Preload sound files on profile load instead of reading them on each key press
+    let effect = sound_effect.make_runtime(&stream_config)?;
+
+    device_manager_state.lock().unwrap().play_effect(effect)
 }

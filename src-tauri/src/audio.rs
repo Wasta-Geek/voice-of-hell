@@ -1,3 +1,5 @@
+/// Convert samples (channels, sample rate)
+pub mod conversion;
 /// Manage audio devices
 pub mod device_manager;
 /// Manage enable audio effect(s)

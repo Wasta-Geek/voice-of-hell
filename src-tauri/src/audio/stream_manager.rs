@@ -20,6 +20,8 @@ pub struct StreamManager {
     output_stream: Option<Stream>,
     /// Manages sound (effects, volume, ...)
     sound_manager: Option<SoundManager>,
+    /// Config of current streams, None if streams not currently opened
+    stream_config: Option<StreamConfig>,
 }
 
 impl StreamManager {
@@ -29,6 +31,7 @@ impl StreamManager {
             input_stream: Option::None,
             output_stream: Option::None,
             sound_manager: None,
+            stream_config: None,
         }
     }
 
@@ -87,7 +90,13 @@ impl StreamManager {
         }
 
         self.sound_manager = Some(sound_manager);
+        self.stream_config = Some(config.clone());
         Ok(())
+    }
+
+    /// Returns config of current streams (None if streams not currently opened)
+    pub fn get_stream_config(&self) -> Option<StreamConfig> {
+        self.stream_config.clone()
     }
 
     /// Queue an audio effect to be played on current streams
@@ -110,5 +119,6 @@ impl StreamManager {
         if let Some(mut sound_manager) = self.sound_manager.take() {
             sound_manager.exit_thread();
         }
+        self.stream_config = None;
     }
 }

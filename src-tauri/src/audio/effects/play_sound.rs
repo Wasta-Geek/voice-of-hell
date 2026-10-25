@@ -1,7 +1,9 @@
 use anyhow::Result;
+use cpal::StreamConfig;
 use std::path::PathBuf;
 
 use crate::{
+    audio::conversion::{convert_channels, resample},
     file::sound_file_reader::create_sound_file_reader,
     models::runtime_audio_effect::RuntimeAudioEffect,
 };
@@ -15,12 +17,25 @@ pub struct AudioEffectPlaySound {
 }
 
 impl AudioEffectPlaySound {
-    /// Returns a new AudioEffectPlaySound instance
-    pub fn new(path: PathBuf) -> Result<Self> {
+    /// Returns a new AudioEffectPlaySound instance, file samples converted to the stream format
+    pub fn new(path: PathBuf, stream_config: &StreamConfig) -> Result<Self> {
         let sound_file_reader = create_sound_file_reader(path)?;
+        let stream_channels = stream_config.channels as usize;
+
+        let sample_list = convert_channels(
+            sound_file_reader.get_content().to_vec(),
+            sound_file_reader.get_channel_count() as usize,
+            stream_channels,
+        );
+        let sample_list = resample(
+            sample_list,
+            stream_channels,
+            sound_file_reader.get_sample_rate(),
+            stream_config.sample_rate.0,
+        )?;
 
         Ok(AudioEffectPlaySound {
-            sample_list: sound_file_reader.get_content().to_vec(),
+            sample_list: sample_list,
             position: 0,
         })
     }

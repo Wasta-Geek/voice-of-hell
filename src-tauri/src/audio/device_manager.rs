@@ -112,6 +112,11 @@ impl DeviceManager {
         }
     }
 
+    /// Returns config of current streams (None if streams not currently opened)
+    pub fn get_stream_config(&self) -> Option<StreamConfig> {
+        self.stream_manager.get_stream_config()
+    }
+
     /// Queue an audio effect to be played on current streams
     pub fn play_effect(&self, effect: Box<dyn RuntimeAudioEffect>) -> Result<()> {
         self.stream_manager.play_effect(effect)

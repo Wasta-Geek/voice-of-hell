@@ -2,7 +2,7 @@ use std::{fs::File, io::BufReader, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use cpal::Sample;
-use hound::{SampleFormat, WavReader};
+use hound::{SampleFormat, WavReader, WavSpec};
 
 use crate::file::sound_file_reader::SoundFileReader;
 
@@ -10,6 +10,8 @@ use crate::file::sound_file_reader::SoundFileReader;
 pub struct WavFileReader {
     /// File content
     samples: Vec<f32>,
+    /// File format
+    spec: WavSpec,
 }
 
 impl SoundFileReader for WavFileReader {
@@ -17,11 +19,22 @@ impl SoundFileReader for WavFileReader {
         let mut reader = WavReader::open(path)?;
         let samples = read_wav_reader_samples_as_f32_vec(&mut reader)?;
 
-        Ok(WavFileReader { samples: samples })
+        Ok(WavFileReader {
+            samples: samples,
+            spec: reader.spec(),
+        })
     }
 
     fn get_content(&self) -> &Vec<f32> {
         &self.samples
+    }
+
+    fn get_channel_count(&self) -> u16 {
+        self.spec.channels
+    }
+
+    fn get_sample_rate(&self) -> u32 {
+        self.spec.sample_rate
     }
 }
 

@@ -10,8 +10,12 @@ pub trait SoundFileReader {
     fn new(path: PathBuf) -> Result<Self>
     where
         Self: Sized;
-    /// Returns file content as a Vec<f32>
+    /// Returns file content as a Vec<f32> (interleaved channels)
     fn get_content(&self) -> &Vec<f32>;
+    /// Returns file channel count
+    fn get_channel_count(&self) -> u16;
+    /// Returns file sample rate (Hz)
+    fn get_sample_rate(&self) -> u32;
 }
 
 /// Returns the reader matching the file extension
