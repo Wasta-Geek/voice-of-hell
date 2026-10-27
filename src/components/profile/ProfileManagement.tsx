@@ -28,12 +28,13 @@ function ProfileManagement() {
   const handleDeleteProfile = useCallback(() => {
     if (config?.last_profile_index_used) {
       const profileIndex = parseInt(config.last_profile_index_used);
-      const new_config = { ...config };
-
-      // Remove profile from config
-      new_config.profiles.splice(profileIndex, 1);
-      // Reset current profile selected
-      new_config.last_profile_index_used = null;
+      // Remove profile from a copy of the config (the cached one must not be mutated)
+      // and reset current profile selected
+      const new_config = {
+        ...config,
+        profiles: config.profiles.filter((_, index) => index != profileIndex),
+        last_profile_index_used: null,
+      };
       // Save config with deleted profile
       setConfig(new_config);
     }

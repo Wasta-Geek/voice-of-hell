@@ -18,7 +18,8 @@ function ProfileKeyEffectList() {
     if (config && config.last_profile_index_used) {
       const profileIndex = parseInt(config.last_profile_index_used);
 
-      const new_config = { ...config };
+      // Deep copy: the cached config must not be mutated
+      const new_config = structuredClone(config);
       // Add new empty keybind
       new_config.profiles[profileIndex].keybind_config.push({
         keycode_list: [],

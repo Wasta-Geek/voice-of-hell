@@ -39,7 +39,8 @@ function ProfileKeyEffectItem({
     (value: string | null) => {
       // Check if config is defined
       if (config) {
-        const new_config = { ...config };
+        // Deep copy: the cached config must not be mutated
+        const new_config = structuredClone(config);
         new_config.profiles[profileIndex].keybind_config[
           keybindIndex
         ].sound_effect = generateSoundEffect(value as RustSoundEffect);

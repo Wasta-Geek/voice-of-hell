@@ -30,7 +30,9 @@ function KeyEffectFileSelector({
     (path: string | null) => {
       if (!config) return;
 
-      const soundEffect = config.profiles[profileIndex].keybind_config[
+      // Deep copy: the cached config must not be mutated
+      const new_config = structuredClone(config);
+      const soundEffect = new_config.profiles[profileIndex].keybind_config[
         keybindIndex
       ].sound_effect as PlaySoundEffect;
 
@@ -39,7 +41,7 @@ function KeyEffectFileSelector({
       soundEffect.name = path?.split(/[\\/]/).pop() ?? "";
       // Not provided by the native dialog
       soundEffect.lastModified = null;
-      setConfig(config);
+      setConfig(new_config);
     },
     [config, profileIndex, keybindIndex],
   );

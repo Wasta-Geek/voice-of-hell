@@ -42,9 +42,10 @@ function KeyEffectVolumeSlider({
     (volume: number) => {
       // Check if config is defined
       if (config) {
-        const soundEffectTyped = config.profiles[profileIndex].keybind_config[
-          keybindIndex
-        ].sound_effect as Extract<
+        // Deep copy: the cached config must not be mutated
+        const new_config = structuredClone(config);
+        const soundEffectTyped = new_config.profiles[profileIndex]
+          .keybind_config[keybindIndex].sound_effect as Extract<
           SoundEffect,
           {
             type:
@@ -54,7 +55,7 @@ function KeyEffectVolumeSlider({
         >;
 
         soundEffectTyped.volume = volume;
-        setConfig(config);
+        setConfig(new_config);
       }
     },
     [config, profileIndex, keybindIndex],

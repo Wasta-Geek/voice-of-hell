@@ -44,7 +44,8 @@ function Keybind({ profileIndex, keybindIndex }: KeybindProps) {
             : keyboardState.keyPressedList;
 
         // Assign keybind to proper profile / effect
-        const new_config = { ...config };
+        // Deep copy: the cached config must not be mutated
+        const new_config = structuredClone(config);
         new_config.profiles[profileIndex].keybind_config[
           keybindIndex
         ].keycode_list = newKeybind;

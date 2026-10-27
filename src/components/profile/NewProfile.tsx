@@ -42,12 +42,15 @@ function NewProfile({ closeCallback }: NewProfileProps) {
     if (config) {
       // Create new profile
       const newProfile = { name: newProfileName, keybind_config: [] };
-      // Add new profile to existing config
-      config.profiles.push(newProfile);
+      // Add new profile to a copy of the config (the cached one must not be mutated)
+      const new_config = {
+        ...config,
+        profiles: [...config.profiles, newProfile],
+      };
       // Save config with added profile
-      setConfig(config).then(() => closeCallback());
+      setConfig(new_config).then(() => closeCallback());
     }
-  }, [newProfileName, closeCallback]);
+  }, [config, newProfileName, closeCallback]);
 
   return (
     <Stack align="center" justify="center" gap="lg">
