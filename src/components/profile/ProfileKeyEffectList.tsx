@@ -51,7 +51,8 @@ function ProfileKeyEffectList() {
       />
       <Grid gutter="xs">
         {config.profiles[profileIndex].keybind_config.map((_, index) => (
-          <Grid.Col span="auto" key={index}>
+          // Profile in key: remount items (and their local state) on profile change
+          <Grid.Col span="auto" key={`${profileIndex}-${index}`}>
             <ProfileKeyEffectItem
               profileIndex={profileIndex}
               keybindIndex={index}
