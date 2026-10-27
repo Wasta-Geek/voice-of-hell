@@ -76,9 +76,10 @@ pub fn save_config(
         stored: config,
         runtime: previous_config.runtime,
     }));
+    // Return the config just saved (config_manager still holds the previous one)
+    let config = new_config_manager.get_config();
     state.store(new_config_manager);
 
-    let config = config_manager.get_config();
     Ok(config.stored)
 }
 
