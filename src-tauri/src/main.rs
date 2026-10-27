@@ -33,8 +33,14 @@ fn main() {
     // Init logger
     init_logger();
     // Init needed managers
-    let device_manager = DeviceManager::new();
+    let mut device_manager = DeviceManager::new();
     let config_manager = ConfigManager::default();
+    // Reopen last used devices
+    let stored_config = config_manager.get_config().stored;
+    device_manager.restore_devices(
+        stored_config.last_input_device_used.as_deref(),
+        stored_config.last_output_device_used.as_deref(),
+    );
     let config_manager_arc = Arc::new(ArcSwap::from_pointee(config_manager));
 
     // Create tauri app

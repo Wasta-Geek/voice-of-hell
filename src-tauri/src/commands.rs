@@ -30,28 +30,59 @@ pub fn app_ready(app: AppHandle, state: State<'_, Mutex<DeviceManager>>) -> Resu
     Ok(())
 }
 
-/// [Tauri command] Use a given audio input device
+/// [Tauri command] Use a given audio input device, returns the config with the device stored as last used
 #[tauri::command]
 pub fn input_device_selected(
-    state: State<'_, Mutex<DeviceManager>>,
+    device_state: State<'_, Mutex<DeviceManager>>,
+    config_state: State<'_, Arc<ArcSwap<ConfigManager>>>,
     device_name: &str,
-) -> Result<(), ()> {
-    let mut device_manager = state.lock().unwrap();
+) -> Result<StoredConfig, ()> {
+    let mut device_manager = device_state.lock().unwrap();
 
-    let _ = device_manager.set_input_device(device_name);
-    Ok(())
+    match device_manager.set_input_device(device_name) {
+        Ok(()) => Ok(update_stored_config(&config_state, |stored| {
+            stored.last_input_device_used = Some(device_name.to_owned())
+        })),
+        Err(error) => {
+            log::error!("Couldn't use input device {device_name}, error: {error:#}");
+            Ok(config_state.load().get_config().stored)
+        }
+    }
 }
 
-/// [Tauri command] Use a given audio output device
+/// [Tauri command] Use a given audio output device, returns the config with the device stored as last used
 #[tauri::command]
 pub fn output_device_selected(
-    state: State<'_, Mutex<DeviceManager>>,
+    device_state: State<'_, Mutex<DeviceManager>>,
+    config_state: State<'_, Arc<ArcSwap<ConfigManager>>>,
     device_name: &str,
-) -> Result<(), ()> {
-    let mut device_manager = state.lock().unwrap();
+) -> Result<StoredConfig, ()> {
+    let mut device_manager = device_state.lock().unwrap();
 
-    let _ = device_manager.set_output_device(device_name);
-    Ok(())
+    match device_manager.set_output_device(device_name) {
+        Ok(()) => Ok(update_stored_config(&config_state, |stored| {
+            stored.last_output_device_used = Some(device_name.to_owned())
+        })),
+        Err(error) => {
+            log::error!("Couldn't use output device {device_name}, error: {error:#}");
+            Ok(config_state.load().get_config().stored)
+        }
+    }
+}
+
+/// Apply the given change to the stored config, returns the updated stored config
+fn update_stored_config(
+    state: &State<'_, Arc<ArcSwap<ConfigManager>>>,
+    update: impl Fn(&mut StoredConfig),
+) -> StoredConfig {
+    // rcu: retried if the config is replaced meanwhile (concurrent save_config), no change lost
+    state.rcu(|config_manager| {
+        let mut config = config_manager.get_config();
+        update(&mut config.stored);
+        ConfigManager::new(config)
+    });
+
+    state.load().get_config().stored
 }
 
 /// [Tauri command] Retrieves app config

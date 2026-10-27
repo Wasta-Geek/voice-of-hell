@@ -2,10 +2,48 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { Stack } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
+
+import { useConfig } from "@/hooks";
+import { AppConfig } from "@/types/AppConfig";
 
 type AudioDevice = {
   name: string;
 };
+
+type DeviceSelectProps = {
+  deviceList: AudioDevice[];
+  selectedDeviceName: string | null;
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+};
+
+/**
+ * Device selection, the stored device is kept visible even if not currently available (unplugged...)
+ * @param {DeviceSelectProps} props component prop
+ */
+function DeviceSelect({
+  deviceList,
+  selectedDeviceName,
+  onChange,
+}: DeviceSelectProps) {
+  const isSelectedDeviceMissing =
+    selectedDeviceName != null &&
+    !deviceList.some((device) => device.name == selectedDeviceName);
+
+  return (
+    <select value={selectedDeviceName ?? ""} onChange={onChange}>
+      <option></option>
+      {isSelectedDeviceMissing && (
+        <option value={selectedDeviceName}>
+          {selectedDeviceName} (unavailable)
+        </option>
+      )}
+      {deviceList.map((device, index) => (
+        <option key={index}>{device.name}</option>
+      ))}
+    </select>
+  );
+}
 
 /**
  * Device tab
@@ -14,6 +52,18 @@ function Devices() {
   // TODO Move into an external component ?
   const [inputDeviceList, setInputDeviceList] = useState<AudioDevice[]>([]);
   const [outputDeviceList, setOutputDeviceList] = useState<AudioDevice[]>([]);
+  const [config] = useConfig();
+  const queryClient = useQueryClient();
+
+  /**
+   * Use the given device, then refresh config (Rust stores the device as last used)
+   * @param command Rust command to invoke
+   * @param deviceName device to use
+   */
+  async function selectDevice(command: string, deviceName: string) {
+    const newConfig = await invoke<AppConfig>(command, { deviceName });
+    queryClient.setQueryData(["config"], newConfig);
+  }
 
   /**
    * Handler called when input device selected changed
@@ -23,7 +73,7 @@ function Devices() {
     event: ChangeEvent<HTMLSelectElement>,
   ) {
     if (event.target.value != "") {
-      invoke("input_device_selected", { deviceName: event.target.value });
+      selectDevice("input_device_selected", event.target.value);
     }
   }
 
@@ -31,12 +81,11 @@ function Devices() {
    * Handler called when output device selected changed
    * @param event Html component
    */
-  // Handler called when output device selected changed
   async function handleOutputDeviceOnChange(
     event: ChangeEvent<HTMLSelectElement>,
   ) {
     if (event.target.value != "") {
-      invoke("output_device_selected", { deviceName: event.target.value });
+      selectDevice("output_device_selected", event.target.value);
     }
   }
 
@@ -66,21 +115,18 @@ function Devices() {
   return (
     <Stack align="center" gap="xs">
       <h1>Input device used:</h1>
-
-      <select onChange={handleInputDeviceOnChange}>
-        <option></option>
-        {inputDeviceList.map((device, index) => (
-          <option key={index}>{device.name}</option>
-        ))}
-      </select>
+      <DeviceSelect
+        deviceList={inputDeviceList}
+        selectedDeviceName={config?.last_input_device_used ?? null}
+        onChange={handleInputDeviceOnChange}
+      />
 
       <h1>Output device used:</h1>
-      <select onChange={handleOutputDeviceOnChange}>
-        <option></option>
-        {outputDeviceList.map((device, index) => (
-          <option key={index}>{device.name}</option>
-        ))}
-      </select>
+      <DeviceSelect
+        deviceList={outputDeviceList}
+        selectedDeviceName={config?.last_output_device_used ?? null}
+        onChange={handleOutputDeviceOnChange}
+      />
     </Stack>
   );
 }

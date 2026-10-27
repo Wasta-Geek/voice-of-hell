@@ -1,6 +1,6 @@
 use std::cmp;
 
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Result, anyhow};
 use cpal::traits::{DeviceTrait, HostTrait};
 use cpal::{Device, Host, SampleFormat, SampleRate, StreamConfig};
 
@@ -88,10 +88,9 @@ impl DeviceManager {
 
     /// Set a target device as input
     pub fn set_input_device(&mut self, target_device_name: &str) -> Result<()> {
-        let input_device = self
-            .find_device_from_name(target_device_name, &self.internal_input_devices)
-            .with_context(|| "toto")?;
-        self.input_device_selected = Some(input_device.clone());
+        let input_device =
+            self.find_device_from_name(target_device_name, &self.internal_input_devices)?;
+        self.input_device_selected = Some(input_device);
 
         match self.input_device_selected.is_some() && self.output_device_selected.is_some() {
             true => self.start_streams(),
@@ -101,14 +100,31 @@ impl DeviceManager {
 
     /// Set a target device as output
     pub fn set_output_device(&mut self, target_device_name: &str) -> Result<()> {
-        let output_device = self
-            .find_device_from_name(target_device_name, &self.internal_output_devices)
-            .with_context(|| "Cpal error occured while starting input stream")?;
-        self.output_device_selected = Some(output_device.clone());
+        let output_device =
+            self.find_device_from_name(target_device_name, &self.internal_output_devices)?;
+        self.output_device_selected = Some(output_device);
 
         match self.input_device_selected.is_some() && self.output_device_selected.is_some() {
             true => self.start_streams(),
             false => Ok(()),
+        }
+    }
+
+    /// Select previously used devices (e.g. from stored config), streams start if both are found
+    pub fn restore_devices(
+        &mut self,
+        input_device_name: Option<&str>,
+        output_device_name: Option<&str>,
+    ) {
+        if let Some(device_name) = input_device_name
+            && let Err(error) = self.set_input_device(device_name)
+        {
+            log::warn!("Couldn't restore input device {device_name}, error: {error:#}");
+        }
+        if let Some(device_name) = output_device_name
+            && let Err(error) = self.set_output_device(device_name)
+        {
+            log::warn!("Couldn't restore output device {device_name}, error: {error:#}");
         }
     }
 
